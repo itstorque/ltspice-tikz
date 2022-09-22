@@ -29,12 +29,17 @@ def add_symbol(symfile):
     global TIKZSET
     
     tikzset_defs.add(symfile)
+    
+#     \tikzset{ pics/res.asy/.style args={#1/#2}{
+# code={
+# \draw (0.32,1.76) to (0.32,1.92);\draw (0.0,1.6) to (0.32,1.76);\draw (0.64,1.28) to (0.0,1.6);\draw (0.0,0.96) to (0.64,1.28);\draw (0.64,0.64) to (0.0,0.96);\draw (0.32,0.32) to (0.32,0.48);\draw (0.32,0.48) to (0.64,0.64);\draw (0.72,0.8) node {#1};\draw (0.72,1.52) node {#2};
+# }
+# }
+# }
 
     with open(symfile, "r") as f:
         
-        # print(f";\n\\begin{{scope}}[rotate={angle}]\n \\draw ")
-        
-        TIKZSET += "\\tikzset{ {" + symfile + "}/.pic = {"
+        TIKZSET += "\\tikzset{ pics/" + symfile + "/.style args={#1*^*#2}{code={"
         
         for i in f.read().split("\n"):
             
@@ -74,11 +79,33 @@ def add_symbol(symfile):
                 theta_i = angle(coords[6:8]-center)
                 theta_f = angle(coords[4:6]-center)
                 
-                TIKZSET += f" \draw ({center[0]},{center[1]}) [partial ellipse={theta_i}:{theta_f}:{size[0]} and {size[1]}];"
+                TIKZSET += f"\draw ({center[0]},{center[1]}) [partial ellipse={theta_i}:{theta_f}:{size[0]} and {size[1]}];"
                 
-        TIKZSET += "}}"
+            elif cmd[0] == "WINDOW":
+                
+                # WINDOW 0 24 16 Left 2
+                # WINDOW 1 36 80 Left 2
+                
+                print("WOOT")
+                
+                type = cmd[1]
+                pos = [coord(i) for i in cmd[2:4]]
+                
+                alignment = cmd[4]
+                fontsize = cmd[5]
+                
+                text = ""
+                
+                if type=="0": 
+                    text = "#1"
+                elif type=="3": 
+                    text = "#2"
+                
+                TIKZSET += f"\\draw ({pos[0]},{pos[1]}) node[yscale=-1] {{{text}}};"
+                
+        TIKZSET += "}}}"
 
-def draw_symbol(symfile, loc, angle):
+def draw_symbol(symfile, loc, angle, data0, data3):
     
     global TIKZCODE
     
@@ -89,13 +116,18 @@ def draw_symbol(symfile, loc, angle):
         add_symbol(symfile)
         
             
-    TIKZCODE += f"\path[rotate around ={'{'}{angle}:({loc[0]}, {loc[1]}){'}'}, anchor=west, transform shape] ({loc[0]}, {loc[1]}) pic{{{symfile}}};"
+    TIKZCODE += f"\path[rotate around ={'{'}{angle}:({loc[0]}, {loc[1]}){'}'}, anchor=west, transform shape] ({loc[0]}, {loc[1]}) pic{{{symfile}={data0}*^*{data3}}};"
     
 def parse_circuit(circuit):
     
     global TIKZCODE
     
-    for i in circuit.split("\n"):
+    circuit_split = circuit.split("\n")
+    
+    k=-1
+    for i in circuit_split:
+        
+        k+=1
         
         cmd = i.split(" ")
         
@@ -119,7 +151,7 @@ def parse_circuit(circuit):
             node_type = cmd[3]
             
             if node_type == "0":
-                draw_symbol("gnd.asy", coords, 0)
+                draw_symbol("gnd.asy", coords, 0, "", "")
             
             # print(f"({coords[0]},{coords[1]}) to ({coords[0]},{coords[1]}) {node_type}")
             
@@ -131,11 +163,25 @@ def parse_circuit(circuit):
             
             angle = int(cmd[4][1:])
             
-            print("**/" + cmd[1].lower()+".asy")
-            
             symfile = glob.glob(cmd[1].lower()+".asy")[0]
             
-            draw_symbol(symfile, coords, angle)
+            klocal = 0
+            
+            data0 = ""
+            data3 = ""
+            
+            while klocal<100:
+                klocal+=1
+                
+                cmd = circuit_split[k+klocal].split(" ")
+                
+                if cmd[0]=="SYMATTR":
+                    if cmd[1] == "InstName": data0 = cmd[2]
+                    elif cmd[1] == "Value": data3 = cmd[2]
+                elif cmd[0] not in {"WINDOW"}:
+                    break
+            
+            draw_symbol(symfile, coords, angle, data0, data3)
             
             # if "Voltage" in cmd[1]:
                 
@@ -227,9 +273,6 @@ if __name__=="__main__":
     except:
         clipboard = False
         print("If you want the result copied to your clipboard, run [pip install pyperclip]")
-        
-        
-    print(detect_encoding(sys.argv[1], "Version"))
 
     circuit = open_file(sys.argv[1])
 
