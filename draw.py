@@ -225,7 +225,7 @@ if __name__=="__main__":
         import pyperclip
         clipboard = True
     except:
-        clipboard = True
+        clipboard = False
         print("If you want the result copied to your clipboard, run [pip install pyperclip]")
         
         
@@ -235,6 +235,9 @@ if __name__=="__main__":
 
     res = circ_to_latex(circuit)
     
-    pyperclip.copy(res)
-    
-    print("latex code copied to clipboard")
+    if clipboard:
+        pyperclip.copy(res)
+        print("latex code copied to clipboard")
+        
+    else:
+        print("\n\n\n", res)
