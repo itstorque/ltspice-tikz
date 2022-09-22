@@ -133,7 +133,7 @@ def parse_circuit(circuit):
             
             print("**/" + cmd[1].lower()+".asy")
             
-            symfile = glob.glob("**/" + cmd[1].lower()+".asy")[0]
+            symfile = glob.glob(cmd[1].lower()+".asy")[0]
             
             draw_symbol(symfile, coords, angle)
             
