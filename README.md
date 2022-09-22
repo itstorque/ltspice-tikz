@@ -16,7 +16,6 @@ otherwise it will print out the output into your terminal.
 - test script to make sure this works
 - orientation of gnd
 - actual support of flags
-- source/component params
 - general text support
 - tran command support?
 - types of export

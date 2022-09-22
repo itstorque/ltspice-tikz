@@ -18,6 +18,8 @@ unitvec = lambda vec: vec / np.linalg.norm(vec)
 
 angle = lambda v: np.degrees(np.arctan2(v[1], v[0]))
 
+node_degree = {}
+
 def tikz_add(s):
     
     global TIKZCODE
@@ -51,7 +53,7 @@ def add_symbol(symfile):
                 
                 style = cmd[1]
                 
-                TIKZSET += f"\draw ({coords[0]},{coords[1]}) to ({coords[2]},{coords[3]});"
+                TIKZSET += f"\draw ({coords[0]},{coords[1]}) to ({coords[2]},{coords[3]});\n"
                 
             elif cmd[0] == "CIRCLE":
                 
@@ -64,7 +66,7 @@ def add_symbol(symfile):
                 
                 pos += size
                 
-                TIKZSET += f"\draw ({pos[0]},{pos[1]}) ellipse ({size[0]} and {size[1]});"
+                TIKZSET += f"\draw ({pos[0]},{pos[1]}) ellipse ({size[0]} and {size[1]});\n"
                 
             elif cmd[0] == "ARC":
                 
@@ -79,7 +81,7 @@ def add_symbol(symfile):
                 theta_i = angle(coords[6:8]-center)
                 theta_f = angle(coords[4:6]-center)
                 
-                TIKZSET += f"\draw ({center[0]},{center[1]}) [partial ellipse={theta_i}:{theta_f}:{size[0]} and {size[1]}];"
+                TIKZSET += f"\draw ({center[0]},{center[1]}) [partial ellipse={theta_i}:{theta_f}:{size[0]} and {size[1]}];\n"
                 
             elif cmd[0] == "WINDOW":
                 
@@ -101,9 +103,9 @@ def add_symbol(symfile):
                 elif type=="3": 
                     text = "#2"
                 
-                TIKZSET += f"\\draw ({pos[0]},{pos[1]}) node[yscale=-1] {{{text}}};"
+                TIKZSET += f"\\draw ({pos[0]},{pos[1]}) node[yscale=-1] {{{text}}};\n"
                 
-        TIKZSET += "}}}"
+        TIKZSET += "}}}\n"
 
 def draw_symbol(symfile, loc, angle, data0, data3):
     
@@ -116,9 +118,17 @@ def draw_symbol(symfile, loc, angle, data0, data3):
         add_symbol(symfile)
         
             
-    TIKZCODE += f"\path[rotate around ={'{'}{angle}:({loc[0]}, {loc[1]}){'}'}, anchor=west, transform shape] ({loc[0]}, {loc[1]}) pic{{{symfile}={data0}*^*{data3}}};"
+    tikz_add(f"\path[rotate around ={'{'}{angle}:({loc[0]}, {loc[1]}){'}'}, anchor=west, transform shape] ({loc[0]}, {loc[1]}) pic{{{symfile}={data0}*^*{data3}}};")
+
+def incremenet_node_degree(p):
+            
+    try:
+        node_degree[p] += 1
+    except:
+        node_degree[p] = 0
     
-def parse_circuit(circuit):
+    
+def parse_circuit(circuit, component_name, component_value):
     
     global TIKZCODE
     
@@ -141,6 +151,9 @@ def parse_circuit(circuit):
             
             WIRES[(coords[0],coords[1])] = (coords[2],coords[3])
             WIRES[(coords[2],coords[3])] = (coords[0],coords[1])
+            
+            incremenet_node_degree((coords[0],coords[1]))
+            incremenet_node_degree((coords[2],coords[3]))
             
         elif "FLAG" in cmd[0]:
             
@@ -176,8 +189,8 @@ def parse_circuit(circuit):
                 cmd = circuit_split[k+klocal].split(" ")
                 
                 if cmd[0]=="SYMATTR":
-                    if cmd[1] == "InstName": data0 = ' '.join(cmd[2:])
-                    elif cmd[1] == "Value": data3 = ' '.join(cmd[2:])
+                    if cmd[1] == "InstName" and component_name: data0 = ' '.join(cmd[2:])
+                    elif cmd[1] == "Value" and component_value: data3 = ' '.join(cmd[2:])
                 elif cmd[0] not in {"WINDOW"}:
                     break
             
@@ -189,11 +202,26 @@ def parse_circuit(circuit):
             
     tikz_add(";")
 
-def circ_to_latex(circuit):
+def post_process_circuit():
+    
+    global TIKZCODE
+    
+    for node, degree in node_degree.items():
+        
+        if degree > 1:
+            
+            draw_symbol("node.asy", node, 0, "", "")
+
+def circ_to_latex(circuit, component_name=False, component_value=False):
     
     res = ""
     
-    parse_circuit(circuit)
+    add_symbol("gnd.asy")
+    add_symbol("node.asy")
+    
+    parse_circuit(circuit, component_name, component_value)
+    
+    post_process_circuit()
 
     res += "\documentclass[tikz,border=2mm]{standalone}\n"
     res += TIKZSET
@@ -239,8 +267,6 @@ def detect_encoding(file_path, expected_str: str = '') -> str:
     else:
         raise UnicodeError("Unable to detect log file encoding")
 
-add_symbol("gnd.asy")
-
 def open_file(file):
     
     with open(file, "rb") as f:
@@ -276,7 +302,7 @@ if __name__=="__main__":
 
     circuit = open_file(sys.argv[1])
 
-    res = circ_to_latex(circuit)
+    res = circ_to_latex(circuit, component_name=False, component_value=False)
     
     if clipboard:
         pyperclip.copy(res)
