@@ -176,8 +176,8 @@ def parse_circuit(circuit):
                 cmd = circuit_split[k+klocal].split(" ")
                 
                 if cmd[0]=="SYMATTR":
-                    if cmd[1] == "InstName": data0 = cmd[2]
-                    elif cmd[1] == "Value": data3 = cmd[2]
+                    if cmd[1] == "InstName": data0 = ' '.join(cmd[2:])
+                    elif cmd[1] == "Value": data3 = ' '.join(cmd[2:])
                 elif cmd[0] not in {"WINDOW"}:
                     break
             
