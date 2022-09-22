@@ -20,6 +20,9 @@ angle = lambda v: np.degrees(np.arctan2(v[1], v[0]))
 
 node_degree = {}
 
+def name_of_component(component):
+    return component.replace("/", "-")
+
 def tikz_add(s):
     
     global TIKZCODE
@@ -41,7 +44,7 @@ def add_symbol(symfile):
 
     with open(symfile, "r") as f:
         
-        TIKZSET += "\\tikzset{ pics/" + symfile + "/.style args={#1*^*#2}{code={"
+        TIKZSET += "\\tikzset{ pics/" + name_of_component(symfile) + "/.style args={#1*^*#2}{code={"
         
         for i in f.read().split("\n"):
             
@@ -118,7 +121,7 @@ def draw_symbol(symfile, loc, angle, data0, data3):
         add_symbol(symfile)
         
             
-    tikz_add(f"\path[rotate around ={'{'}{angle}:({loc[0]}, {loc[1]}){'}'}, anchor=west, transform shape] ({loc[0]}, {loc[1]}) pic{{{symfile}={data0}*^*{data3}}};")
+    tikz_add(f"\path[rotate around ={'{'}{angle}:({loc[0]}, {loc[1]}){'}'}, anchor=west, transform shape] ({loc[0]}, {loc[1]}) pic{{{name_of_component(symfile)}={data0}*^*{data3}}};")
 
 def incremenet_node_degree(p):
             
@@ -128,7 +131,7 @@ def incremenet_node_degree(p):
         node_degree[p] = 0
     
     
-def parse_circuit(circuit, component_name, component_value):
+def parse_circuit(circuit, component_name, component_value, local_dir):
     
     global TIKZCODE
     
@@ -176,7 +179,10 @@ def parse_circuit(circuit, component_name, component_value):
             
             angle = int(cmd[4][1:])
             
-            symfile = glob.glob(cmd[1].lower()+".asy")[0]
+            try:
+                symfile = glob.glob(cmd[1].lower()+".asy")[0]
+            except:
+                symfile = glob.glob(local_dir + "/" + cmd[1].lower()+".asy")[0]
             
             klocal = 0
             
@@ -212,14 +218,14 @@ def post_process_circuit():
             
             draw_symbol("node.asy", node, 0, "", "")
 
-def circ_to_latex(circuit, component_name=False, component_value=False):
+def circ_to_latex(circuit, component_name=False, component_value=False, local_dir="."):
     
     res = ""
     
     add_symbol("gnd.asy")
     add_symbol("node.asy")
     
-    parse_circuit(circuit, component_name, component_value)
+    parse_circuit(circuit, component_name, component_value, local_dir)
     
     post_process_circuit()
 
@@ -270,7 +276,7 @@ def detect_encoding(file_path, expected_str: str = '') -> str:
 def open_file(file):
     
     with open(file, "rb") as f:
-        return decode_data(f.read())
+        return decode_data(f.read()), os.path.dirname(os.path.realpath(file))
 
 def decode_data(data):
     
@@ -300,9 +306,9 @@ if __name__=="__main__":
         clipboard = False
         print("If you want the result copied to your clipboard, run [pip install pyperclip]")
 
-    circuit = open_file(sys.argv[1])
+    circuit, dir = open_file(sys.argv[1])
 
-    res = circ_to_latex(circuit, component_name=False, component_value=False)
+    res = circ_to_latex(circuit, component_name=False, component_value=False, local_dir=dir)
     
     if clipboard:
         pyperclip.copy(res)
