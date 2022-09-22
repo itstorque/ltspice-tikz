@@ -1,4 +1,5 @@
 import glob, os
+import sys
 import numpy as np
 
 coord = lambda x: np.floor(float(x)/50*100)/100
@@ -73,7 +74,7 @@ def add_symbol(symfile):
                 theta_i = angle(coords[6:8]-center)
                 theta_f = angle(coords[4:6]-center)
                 
-                TIKZSET += f" \draw ({pos[0]},{pos[1]}) [partial ellipse={theta_i}:{theta_f}:{size[0]} and {size[1]}];"
+                TIKZSET += f" \draw ({center[0]},{center[1]}) [partial ellipse={theta_i}:{theta_f}:{size[0]} and {size[1]}];"
                 
         TIKZSET += "}}"
 
@@ -130,7 +131,9 @@ def parse_circuit(circuit):
             
             angle = int(cmd[4][1:])
             
-            symfile = glob.glob("" + cmd[1].lower()+".asy")[0]
+            print("**/" + cmd[1].lower()+".asy")
+            
+            symfile = glob.glob("**/" + cmd[1].lower()+".asy")[0]
             
             draw_symbol(symfile, coords, angle)
             
@@ -140,25 +143,98 @@ def parse_circuit(circuit):
             
     tikz_add(";")
 
+def circ_to_latex(circuit):
+    
+    res = ""
+    
+    parse_circuit(circuit)
+
+    res += "\documentclass[tikz,border=2mm]{standalone}\n"
+    res += TIKZSET
+    res += """\n\\begin{document}
+    \\begin{tikzpicture}[yscale = -1]\n"""
+    res += TIKZCODE
+    res+="""\n
+    \end{tikzpicture}
+    \end{document}"""
+    
+    return res
+
+def detect_encoding(file_path, expected_str: str = '') -> str:
+    """
+    Simple strategy to detect file encoding.  If an expected_str is given the function will scan through the possible
+    encodings and return a match.
+    If an expected string is not given, it will use the second character is null, high chances are that this file has an
+    'utf_16_le' encoding, otherwise it is assuming that it is 'utf-8'.
+    :param file_path: path to the filename
+    :type file_path: str
+    :param expected_str: text which the file should start with
+    :type expected_str: str
+    :return: detected encoding
+    :rtype: str
+    """
+    for encoding in ('utf-8', 'utf_16_le', 'cp1252', 'cp1250', 'shift-jis'):
+        try:
+            with open(file_path, 'r', encoding=encoding) as f:
+                lines = f.readlines()
+                f.seek(0)
+        except UnicodeDecodeError:
+            # This encoding didn't work, let's try again
+            continue
+        else:
+            if expected_str:
+                if not lines[0].startswith(expected_str):
+                    # File did not start with expected string
+                    # Try again with a different encoding (This is unlikely to resolve the issue)
+                    continue
+            if encoding == 'utf-8' and lines[0][1] == '\x00':
+                continue
+            return encoding
+    else:
+        raise UnicodeError("Unable to detect log file encoding")
+
 add_symbol("gnd.asy")
+
+def open_file(file):
     
-circuit = None
+    with open(file, "rb") as f:
+        return decode_data(f.read())
 
-with open("test.asc", "rb") as f:
-    data = f.read()
-    data = data.replace(b'\x00', b'')
-    data = data[2:]
+def decode_data(data):
     
-    circuit = data.decode('utf-8')
+    return data.decode(detect_encoding(sys.argv[1], "Version"))
+    
+    # data = data.replace(b'\x00', b'')
+    
+    try:
+        circuit = data.decode('utf-16-le')
+        print(circuit)
+    except:
+        try:
+            circuit = data[1:].decode('utf-8')
+        except:
+            circuit = data[2:].decode('utf-8')
+            
+    return circuit
 
-parse_circuit(circuit)
+# def try_to_read(file):
 
-print("""\documentclass[tikz,border=2mm]{standalone}""")
-print(TIKZSET)
-print("""\\begin{document}
-\\begin{tikzpicture}[yscale = -1]""")
-print(TIKZCODE)
-print("""
-\end{tikzpicture}
-\end{document}
-      """)
+if __name__=="__main__":
+    
+    try:
+        import pyperclip
+        clipboard = True
+    except:
+        clipboard = True
+        print("If you want the result copied to your clipboard, run [pip install pyperclip]")
+        
+        
+    print(detect_encoding(sys.argv[1], "Version"))
+
+    circuit = open_file(sys.argv[1])
+
+    res = circ_to_latex(circuit)
+    
+    pyperclip.copy(res)
+    
+    print("latex code copied to clipboard")
