@@ -6,8 +6,16 @@ coord = lambda x: np.floor(float(x)/50*100)/100
 WIRES = {}
 
 tikzset_defs = set()
-TIKZSET = ""
+TIKZSET = """\\tikzset{
+    partial ellipse/.style args={#1:#2:#3}{
+        insert path={+ (#1:#3) arc (#1:#2:#3)}
+    }
+}"""
 TIKZCODE = ""
+
+unitvec = lambda vec: vec / np.linalg.norm(vec)
+
+angle = lambda v: np.degrees(np.arctan2(v[1], v[0]))
 
 def tikz_add(s):
     
@@ -54,7 +62,18 @@ def add_symbol(symfile):
                 
             elif cmd[0] == "ARC":
                 
-                coords = [coord(i) for i in cmd[2:6]]
+                coords = np.array([coord(i) for i in cmd[2:10]])
+                
+                pos = coords[0:2]
+                
+                size = abs(pos - coords[2:4])/2
+                
+                center = (pos + coords[2:4])/2
+                
+                theta_i = angle(coords[6:8]-center)
+                theta_f = angle(coords[4:6]-center)
+                
+                TIKZSET += f" \draw ({pos[0]},{pos[1]}) [partial ellipse={theta_i}:{theta_f}:{size[0]} and {size[1]}];"
                 
         TIKZSET += "}}"
 
