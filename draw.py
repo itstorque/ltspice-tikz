@@ -218,7 +218,7 @@ def post_process_circuit():
             
             draw_symbol("node.asy", node, 0, "", "")
 
-def circ_to_latex(circuit, component_name=False, component_value=False, local_dir="."):
+def circ_to_latex(circuit, component_name=False, component_value=False, local_dir=".", entire_page=False):
     
     res = ""
     
@@ -229,14 +229,13 @@ def circ_to_latex(circuit, component_name=False, component_value=False, local_di
     
     post_process_circuit()
 
-    res += "\documentclass[tikz,border=2mm]{standalone}\n"
+    if entire_page: res += "\documentclass[tikz,border=2mm]{standalone}\n"
     res += TIKZSET
-    res += """\n\\begin{document}
-    \\begin{tikzpicture}[yscale = -1]\n"""
+    if entire_page: res += "\n\\begin{document}"
+    res += "\\begin{tikzpicture}[yscale = -1]\n"
     res += TIKZCODE
-    res+="""\n
-    \end{tikzpicture}
-    \end{document}"""
+    res += "\n\end{tikzpicture}"
+    if entire_page: res += "\end{document}"
     
     return res
 
@@ -308,7 +307,7 @@ if __name__=="__main__":
 
     circuit, dir = open_file(sys.argv[1])
 
-    res = circ_to_latex(circuit, component_name=False, component_value=False, local_dir=dir)
+    res = circ_to_latex(circuit, component_name=True, component_value=False, local_dir=dir, entire_page=True)
     
     if clipboard:
         pyperclip.copy(res)
