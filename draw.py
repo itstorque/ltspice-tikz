@@ -177,10 +177,10 @@ def parse_circuit(circuit, component_name, component_value, local_dir):
                 os.chdir(os.path.expanduser('~') + "/Library/Application Support/LTspice/lib/sym")
             
             elif sys.platform == "linux" or sys.platform == "linux2":
-                os.chdir(os.path.expanduser('~') + "~/Documents/LTspiceXVII/lib/sym")
+                os.chdir(os.path.expanduser('~') + "/Documents/LTspiceXVII/lib/sym")
                 
             elif sys.platform == "win32":
-                os.chdir(os.path.expanduser('~') + "~/Documents/LTspiceXVII/lib/sym")
+                os.chdir(os.path.expanduser('~') + "/Documents/LTspiceXVII/lib/sym")
             
             coords = [coord(i) for i in cmd[2:4]]
             
