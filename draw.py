@@ -91,8 +91,6 @@ def add_symbol(symfile):
                 # WINDOW 0 24 16 Left 2
                 # WINDOW 1 36 80 Left 2
                 
-                print("WOOT")
-                
                 type = cmd[1]
                 pos = [coord(i) for i in cmd[2:4]]
                 
