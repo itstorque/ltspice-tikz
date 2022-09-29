@@ -20,6 +20,11 @@ angle = lambda v: np.degrees(np.arctan2(v[1], v[0]))
 
 node_degree = {}
 
+def rotate_vec(vec, deg):
+    theta = np.deg2rad(deg)
+    rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+    return np.dot(rot, vec)
+
 def name_of_component(component):
     return component.replace("/", "-")
 
@@ -112,6 +117,9 @@ def draw_symbol(symfile, loc, angle, data0, data3):
     
     global TIKZCODE
     
+    if data0==None: data0 = ""
+    if data3==None: data3 = ""
+    
     if symfile in tikzset_defs:
         # place in circ
         pass
@@ -128,6 +136,31 @@ def incremenet_node_degree(p):
     except:
         node_degree[p] = 0
     
+def text_window(text, pos, angle, align_vec=[0, 1]):
+    
+    global TIKZCODE
+    
+    align_cmd = ""
+    
+    print(text, align_vec, angle)
+    
+    align_vec = rotate_vec(align_vec, angle)
+    
+    if angle == 90 or angle == 270:
+        align_vec = rotate_vec(align_vec, -90)
+    
+    if np.allclose(align_vec, [0, 1]):
+        align_cmd = "[below]"
+    elif np.allclose(align_vec, [0, -1]):
+        align_cmd = "[above]"
+    elif np.allclose(align_vec, [1, 0]):
+        align_cmd = "[left]"
+    elif np.allclose(align_vec, [-1, 0]):
+        align_cmd = "[right]"
+    
+    print(align_vec, align_cmd)
+    
+    TIKZCODE +=  f"\\draw ({pos[0]},{pos[1]}) node {align_cmd} {{{text}}};\n"
     
 def parse_circuit(circuit, component_name, component_value, local_dir):
     
@@ -180,7 +213,7 @@ def parse_circuit(circuit, component_name, component_value, local_dir):
             elif sys.platform == "win32":
                 os.chdir(os.path.expanduser('~') + "/Documents/LTspiceXVII/lib/sym")
             
-            coords = [coord(i) for i in cmd[2:4]]
+            coords = np.array( [coord(i) for i in cmd[2:4]] )
             
             angle = int(cmd[4][1:])
             
@@ -194,18 +227,56 @@ def parse_circuit(circuit, component_name, component_value, local_dir):
             data0 = ""
             data3 = ""
             
+            window0, window3 = None, None
+            
             while klocal<100:
                 klocal+=1
                 
                 cmd = circuit_split[k+klocal].split(" ")
                 
                 if cmd[0]=="SYMATTR":
-                    if cmd[1] == "InstName" and component_name: data0 = ' '.join(cmd[2:])
-                    elif cmd[1] == "Value" and component_value: data3 = ' '.join(cmd[2:])
+                    if cmd[1] == "InstName" and component_name:
+                        if data0!=None: 
+                            data0 = ' '.join(cmd[2:])
+                        else:
+                            pos = np.array([coord(window0[i]) for i in [0, 1]])
+                            pos = rotate_vec(pos, angle)+coords
+                            
+                            if window0[2] == "VBottom": window0[2] = [0, -1]
+                            elif window0[2] == "VTop": window0[2] = [0, 1]
+                            elif window0[2] == "Left": window0[2] = [-1, 0]
+                            elif window0[2] == "Right": window0[2] = [1, 0]
+                            
+                            text_window( ' '.join(cmd[2:]), pos, angle, align_vec=window0[2])
+                            
+                    elif cmd[1] == "Value" and component_value: 
+                        if data3!=None: 
+                            data3 = ' '.join(cmd[2:])
+                        else:
+                            pos = [coord(window3[i]) for i in [0, 1]]
+                            pos = rotate_vec(pos, angle)+coords
+                            
+                            if window3[2] == "VBottom": window3[2] = [0, -1]
+                            elif window3[2] == "VTop": window3[2] = [0, 1]
+                            elif window3[2] == "Left": window3[2] = [-1, 0]
+                            elif window3[2] == "Right": window3[2] = [1, 0]
+                            
+                            text_window( ' '.join(cmd[2:]), pos, angle, align_vec=window3[2])
+                            
+                elif cmd[0]=="WINDOW":
+                    if cmd[1] == "0":
+                        window0 = cmd[2:]
+                        data0 = None
+                    elif cmd[1] == "3":
+                        window3 = cmd[2:]
+                        data3 = None
+                    
                 elif cmd[0] not in {"WINDOW"}:
                     break
             
             draw_symbol(symfile, coords, angle, data0, data3)
+            
+            
             
             # if "Voltage" in cmd[1]:
                 
@@ -312,7 +383,7 @@ if __name__=="__main__":
 
     circuit, dir = open_file(sys.argv[1])
 
-    res = circ_to_latex(circuit, component_name=True, component_value=False, local_dir=dir, entire_page=True)
+    res = circ_to_latex(circuit, component_name=True, component_value=True, local_dir=dir, entire_page=True)
     
     if clipboard:
         pyperclip.copy(res)
