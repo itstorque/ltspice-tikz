@@ -142,8 +142,6 @@ def text_window(text, pos, angle, align_vec=[0, 1]):
     
     align_cmd = ""
     
-    print(text, align_vec, angle)
-    
     align_vec = rotate_vec(align_vec, angle)
     
     if angle == 90 or angle == 270:
@@ -157,8 +155,6 @@ def text_window(text, pos, angle, align_vec=[0, 1]):
         align_cmd = "[left]"
     elif np.allclose(align_vec, [-1, 0]):
         align_cmd = "[right]"
-    
-    print(align_vec, align_cmd)
     
     TIKZCODE +=  f"\\draw ({pos[0]},{pos[1]}) node {align_cmd} {{{text}}};\n"
     
@@ -201,6 +197,21 @@ def parse_circuit(circuit, component_name, component_value, local_dir):
                 draw_symbol("gnd.asy", coords, 0, "", "")
             
             # print(f"({coords[0]},{coords[1]}) to ({coords[0]},{coords[1]}) {node_type}")
+            
+        elif "TEXT" in cmd[0]:
+            
+            pos = [coord(i) for i in cmd[1:3]]
+            
+            if cmd[3] == "VBottom": cmd[3] = [0, -1]
+            elif cmd[3] == "VTop": cmd[3] = [0, 1]
+            elif cmd[3] == "Left": cmd[3] = [-1, 0]
+            elif cmd[3] == "Right": cmd[3] = [1, 0]
+            
+            text = ' '.join(cmd[5:]) #[1:] # the [1:] removes the [; or !] char at the beginning of comment
+            
+            # TODO: cmd 4 is size (and add support for symbol window and symbol compiler!)
+            
+            text_window(text, pos, 0, align_vec=cmd[3])
             
         elif "SYMBOL" in cmd[0]:
 
