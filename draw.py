@@ -20,7 +20,16 @@ angle = lambda v: np.degrees(np.arctan2(v[1], v[0]))
 
 node_degree = {}
 
+def cleanup_text(text):
+    
+    text = text.replace("_", "\\_")
+    
+    return text
+
 def rotate_vec(vec, deg):
+    
+    print(vec)
+    
     theta = np.deg2rad(deg)
     rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
     return np.dot(rot, vec)
@@ -120,12 +129,13 @@ def draw_symbol(symfile, loc, angle, data0, data3):
     if data0==None: data0 = ""
     if data3==None: data3 = ""
     
+    data0, data3 = cleanup_text(data0), cleanup_text(data3)
+    
     if symfile in tikzset_defs:
         # place in circ
         pass
     else:
         add_symbol(symfile)
-        
             
     tikz_add(f"\path[rotate around ={'{'}{angle}:({loc[0]}, {loc[1]}){'}'}, anchor=west, transform shape] ({loc[0]}, {loc[1]}) pic{{{name_of_component(symfile)}={data0}*^*{data3}}};")
 
@@ -156,7 +166,7 @@ def text_window(text, pos, angle, align_vec=[0, 1]):
     elif np.allclose(align_vec, [-1, 0]):
         align_cmd = "[right]"
     
-    TIKZCODE +=  f"\\draw ({pos[0]},{pos[1]}) node {align_cmd} {{{text}}};\n"
+    TIKZCODE +=  f"\\draw ({pos[0]},{pos[1]}) node {align_cmd} {{{cleanup_text(text)}}};\n"
     
 def parse_circuit(circuit, component_name, component_value, local_dir):
     
@@ -316,7 +326,7 @@ def circ_to_latex(circuit, component_name=False, component_value=False, local_di
     
     post_process_circuit()
 
-    if entire_page: res += "\documentclass[tikz,border=2mm]{standalone}\n"
+    if entire_page: res += "\documentclass[tikz,border=5mm]{standalone}\n"
     res += TIKZSET
     if entire_page: res += "\n\\begin{document}"
     res += "\\begin{tikzpicture}[yscale = -1]\n"
