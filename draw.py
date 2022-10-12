@@ -349,7 +349,7 @@ def detect_encoding(file_path, expected_str: str = '') -> str:
     :return: detected encoding
     :rtype: str
     """
-    for encoding in ('utf-8', 'utf_16_le', 'cp1252', 'cp1250', 'shift-jis'):
+    for encoding in ('utf-8', 'utf-16-le', 'cp1252', 'cp1250', 'shift-jis'):
         try:
             with open(file_path, 'r', encoding=encoding) as f:
                 lines = f.readlines()
@@ -359,7 +359,7 @@ def detect_encoding(file_path, expected_str: str = '') -> str:
             continue
         else:
             if expected_str:
-                if not lines[0].startswith(expected_str):
+                if not expected_str in lines[0]:
                     # File did not start with expected string
                     # Try again with a different encoding (This is unlikely to resolve the issue)
                     continue
