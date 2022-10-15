@@ -1,3 +1,4 @@
+from pathlib import Path
 import glob, os
 import sys
 import numpy as np
@@ -148,6 +149,8 @@ def incremenet_node_degree(p):
     
 def text_window(text, pos, angle, align_vec=[0, 1]):
     
+    if NO_COMMENTS_AND_COMMANDS == True: return
+    
     global TIKZCODE
     
     align_cmd = ""
@@ -225,23 +228,29 @@ def parse_circuit(circuit, component_name, component_value, local_dir):
             
         elif "SYMBOL" in cmd[0]:
 
-            if sys.platform == "darwin":
-                os.chdir(os.path.expanduser('~') + "/Library/Application Support/LTspice/lib/sym")
+            # if sys.platform == "darwin":
+            #     os.chdir(os.path.expanduser('~') + "/Library/Application Support/LTspice/lib/sym")
             
-            elif sys.platform == "linux" or sys.platform == "linux2":
-                os.chdir(os.path.expanduser('~') + "/Documents/LTspiceXVII/lib/sym")
+            # elif sys.platform == "linux" or sys.platform == "linux2":
+            #     os.chdir(os.path.expanduser('~') + "/Documents/LTspiceXVII/lib/sym")
                 
-            elif sys.platform == "win32":
-                os.chdir(os.path.expanduser('~') + "/Documents/LTspiceXVII/lib/sym")
+            # elif sys.platform == "win32":
+            #     os.chdir(os.path.expanduser('~') + "/Documents/LTspiceXVII/lib/sym")
             
             coords = np.array( [coord(i) for i in cmd[2:4]] )
             
             angle = int(cmd[4][1:])
             
-            try:
-                symfile = glob.glob(cmd[1].lower()+".asy")[0]
-            except:
-                symfile = glob.glob(local_dir + "/" + cmd[1].lower()+".asy")[0]
+            # check if symbol
+            path = Path(local_dir + "/" + cmd[1]+".asy")
+            
+            # try:
+            #     symfile = glob.glob(cmd[1].lower()+".asy")[0]
+            # except:
+            #     symfile = glob.glob(local_dir + "/" + cmd[1].lower()+".asy")[0]
+            
+            if not path.is_file():
+                path = Path(cmd[1]+".asy")
             
             klocal = 0
             
@@ -403,8 +412,10 @@ if __name__=="__main__":
         print("If you want the result copied to your clipboard, run [pip install pyperclip]")
 
     circuit, dir = open_file(sys.argv[1])
+    
+    NO_COMMENTS_AND_COMMANDS = True
 
-    res = circ_to_latex(circuit, component_name=True, component_value=True, local_dir=dir, entire_page=True)
+    res = circ_to_latex(circuit, component_name=False, component_value=False, local_dir=dir, entire_page=True)
     
     if clipboard:
         pyperclip.copy(res)
