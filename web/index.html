@@ -2,21 +2,26 @@
     <head>
         <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
     </head>
+
     <body onload="brython()">
-        <script type="text/python">
-            from browser import document
-            from browser.widgets.dialog import InfoDialog
-
-            def click(ev):
-                InfoDialog("Hello", f"Hello, {document['zone'].value} !")
-
-            # bind event 'click' on button to function echo
-            document["echo"].bind("click", click)
-        </script>
+        <script type="text/python" src="web.py"></script>
 
         <h1>LTspice-tikz test</h1>
 
-        <input id="zone">
-        <button id="echo">click !</button>
+        <!-- <input id="zone">
+        <button id="echo">click !</button> -->
+
+
+        <br><input type="file" id="file_source" accept=".asc,.asy">
+        <br><textarea id="file_text" rows="20" cols="60" autocomplete="off" hidden></textarea>
+        <p>
+        <pre class="python"></pre>
+        <p>
+
+        <button id="to_tikz">Convert to LaTeX/tikz</button>
+
+        <button id="copy">copy code</button>
+        <textarea id="output" rows="20" cols="60" autocomplete="off"></textarea>
+
     </body>
 </html>
