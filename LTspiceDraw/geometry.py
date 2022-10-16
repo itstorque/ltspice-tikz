@@ -1,3 +1,6 @@
+import numpy as np
+from styling import *
+
 # TODO: add coordinate object...
 class Geometry:
     
@@ -25,7 +28,7 @@ class Geometry:
     def from_ltspice_gui_command(self, coords):
         # a class method that initializes asy and asc Geometrys
         
-        coords = [math.floor(float(c)/50*100)/100 for c in coords]
+        coords = [np.floor(float(c)/50*100)/100 for c in coords]
         
         style = coords[-1]
     

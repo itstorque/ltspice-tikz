@@ -1,35 +1,38 @@
 <html>
     <head>
-        <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+        <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+        <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
     </head>
 
-    <body onload="brython()">
-        <script type="text/python" src="LTspiceDraw/styling.py" id="Styling"></script>
-        <script type="text/python" src="LTspiceDraw/circuit.py" id="Circuit"></script>
-        <script type="text/python" src="LTspiceDraw/drawer.py" id="Drawer"></script>
-        <script type="text/python" src="LTspiceDraw/geometry.py" id="Geometry"></script>
-        <script type="text/python" src="LTspiceDraw/reader.py" id="Reader"></script>
-        <script type="text/python" src="LTspiceDraw/tikz-export.py" id="TikzExport"></script>
-        
-        <script type="text/python" src="web.py"></script>
+    <bod>
+        <!-- <script type="text/python" src="web.py"></script> -->
 
         <h1>LTspice-tikz test</h1>
 
-        <!-- <input id="zone">
-        <button id="echo">click !</button> -->
+        <py-config type="toml">
+            packages = ["numpy"]
+            paths = [
+                "./LTspiceDraw/circuit.py", 
+                "./LTspiceDraw/drawer.py", 
+                "./LTspiceDraw/geometry.py", 
+                "./LTspiceDraw/reader.py",
+                "./LTspiceDraw/styling.py",
+                "./LTspiceDraw/tikz-export.py"
+                ]
+        </py-config>
 
 
-        <br><input type="file" id="file_source" accept=".asc,.asy">
-        <br><textarea id="file_text" rows="20" cols="60" autocomplete="off" hidden></textarea>
-        <p>
-        <pre class="python"></pre>
-        <p>
+        <py-script output="out">
 
-        <button id="to_tikz">Convert to LaTeX/tikz</button>
+            import geometry
 
-        <button id="copy">copy code</button>
-        <textarea id="output" rows="20" cols="60" autocomplete="off"></textarea>
+            g = geometry.Geometry()
+
+            print(g.color())
+            
+        </py-script>
+        
+        <div id="out"></div>
 
     </body>
 </html>
