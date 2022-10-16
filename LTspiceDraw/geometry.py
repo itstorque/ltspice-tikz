@@ -83,13 +83,16 @@ class Arc(Geometry):
         
     @classmethod
     def from_ltspice_gui_command(self, coords):
-        super().from_ltspice_gui_command(coords)
         
-        pos = coords[0:2]
+        coords = [float(i) for i in coords[1:9]]
+        
+        pos = np.array(coords[0:2])
                 
         size = abs(pos - coords[2:4])/2
         
         center = (pos + coords[2:4])/2
+        
+        angle = lambda v: np.degrees(np.arctan2(v[1], v[0]))
         
         theta_i = angle(coords[6:8]-center)
         theta_f = angle(coords[4:6]-center)
@@ -107,10 +110,10 @@ class Circle(Arc):
     @classmethod
     def from_ltspice_gui_command(self, coords):
         
-        super().from_ltspice_gui_command(coords)
+        coords = [float(i) for i in coords[1:5]]
 
-        pos = coords[0:2]
-        size = [abs(i - j)/2 for i, j in zip(pos, coords[2:4])]
+        pos = np.array(coords[0:2])
+        size = abs(pos - coords[2:4])/2
         
         pos += size
         
