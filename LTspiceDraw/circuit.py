@@ -6,9 +6,11 @@ class CircuitSchematic:
         
         self.elements = set()
     
-    def add_line(self, point1, point2, style=LineStyle.solid):
+    def add(self, elem):
         
-        self.elements
+        print(elem)
+        
+        self.elements.add(elem)
 
 class CircuitElement(CircuitSchematic):
     

@@ -8,6 +8,8 @@ class Geometry:
         
         self.linestyle = linestyle
         self.color = color
+        self.line_cap = "square"
+        self.thickness = 1
     
     def set_style(self, style):
         if style in LineStyle:
@@ -27,8 +29,13 @@ class Geometry:
     @classmethod
     def from_ltspice_gui_command(self, coords):
         # a class method that initializes asy and asc Geometrys
+        # TODO: this is not doing anything as of now... Change inehrent resolution here? idk...
         
-        coords = [np.floor(float(c)/50*100)/100 for c in coords]
+        for i in range(len(coords)):
+            try: 
+                coords[i] = np.floor(float(coords[i])/50*100)/100
+            except:
+                coords[i] = coords[i]
         
         style = coords[-1]
     
@@ -37,17 +44,24 @@ class Line(Geometry):
     def __init__(self, point1, point2, linestyle=LineStyle.solid, color=Colors.unassigned) -> None:
         super().__init__(linestyle, color)
         
-        self.start = point1
-        self.end   = point2
+        self.start = (point1[0], point1[1])
+        self.end   = (point2[0], point2[1])
         
     @classmethod
     def from_ltspice_gui_command(self, coords):
-        super().from_ltspice_gui_command(coords)
+        # super().from_ltspice_gui_command(coords)
         
-        return Line(coords[2:4], coords[4:6])
+        # linestyle = LineStyle(coords[0]) # TODO: check what NORMAL does in LINE syntax...
+        
+        coords = [float(i) for i in coords[1:5]]
+        
+        return Line(coords[0:2], coords[2:4])#, linestyle=linestyle)
         
     def tikz(self) -> str:
         return f"\draw ({self.start[0]},{self.start[1]}) to ({self.end[0]},{self.end[1]});"
+    
+    def __str__(self):
+        return f"LINE ({self.start[0]},{self.start[1]}) to ({self.end[0]},{self.end[1]})"
     
 class Arc(Geometry):
     
@@ -118,3 +132,15 @@ class Symbol(Geometry):
     def draw(self):
         
         return '\n'.join([ geom.draw() for geom in self.geometries ])
+    
+class Wire(Line):
+    
+    @classmethod
+    def from_ltspice_gui_command(self, coords):
+        return super().from_ltspice_gui_command( [0] + coords )
+
+class Text(Geometry):
+    pass
+
+class Flag(Text):
+    pass

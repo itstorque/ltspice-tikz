@@ -2,6 +2,7 @@
     <head>
         <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
         <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     </head>
 
     <bod>
@@ -9,30 +10,42 @@
 
         <h1>LTspice-tikz test</h1>
 
+        <div id="status">Loading page ...</div>
+        <br>
+
         <py-config type="toml">
             packages = ["numpy"]
             paths = [
                 "./LTspiceDraw/circuit.py", 
                 "./LTspiceDraw/drawer.py", 
                 "./LTspiceDraw/geometry.py", 
-                "./LTspiceDraw/reader.py",
+                "./LTspiceDraw/file_interface.py",
                 "./LTspiceDraw/styling.py",
-                "./LTspiceDraw/tikz-export.py"
+                "./LTspiceDraw/exporter.py",
                 ]
         </py-config>
 
 
-        <py-script output="out">
-
-            import geometry
-
-            g = geometry.Geometry()
-
-            print(g.color())
-            
-        </py-script>
+        <py-script output="out" src="./web.py"></py-script>
         
+        
+        <label for="Upload ASC/ASY"></label><input type="file" id="file-upload" accept=".asc,.asy">
+
+        <div class="button-group">
+            <button type="button" class="scale" data-scale="up">+</button>
+            <button type="button" class="scale" data-scale="down" disabled>-</button>
+        </div>
+
+        <div id="mouse-pos"></div>
+        <div id="transformed-mouse-pos"></div>
+
+        <canvas id="canvas" style="background-color:#888" width="1000px" height="1000px"></canvas>
+
         <div id="out"></div>
+
+        <p id="content"></p>
+
+        <script src="canvas.js"></script>
 
     </body>
 </html>

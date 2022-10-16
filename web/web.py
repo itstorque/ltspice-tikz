@@ -1,48 +1,59 @@
-# from browser import document, alert
+from js import document, FileReader
+from pyodide import create_proxy
 
-# def click(ev):
-#     alert(document["zone"].value)
+from file_interface import parser
+from exporter import HTML_Canvas_Exporter
 
-# # bind event 'click' on button to function echo
-# document["echo"].bind("click", click)
+canvas = document.getElementById("canvas")
+ctx = canvas.getContext("2d")
+CANVAS = HTML_Canvas_Exporter(ctx)
 
-from browser import bind, window, document, ajax
+def set_running():
+	document.getElementById("status").innerHTML = 'Python loaded and running ...'
+ 
+def read_complete(event):
+    # event is ProgressEvent
 
-# impor
+    content = document.getElementById("content")
+    content.innerText = event.target.result
 
-import Circuit, Drawer, Geometry, Reader, Styling, TikzExport
-
-load_btn = document["file_source"]
-tikz_btn = document["to_tikz"]
-copy_btn = document["copy"]
-
-print(Circuit.CircuitSchematic)
-
-@bind(load_btn, "input")
-def file_read(ev):
-
-    def onload(event):
-        """Triggered when file is read. The FileReader instance is
-        event.target.
-        The file content, as text, is the FileReader instance's "result"
-        attribute."""
-        document['file_text'].value = event.target.result
-        
-        draw_file(None)
-
-    # Get the selected file as a DOM File object
-    file = load_btn.files[0]
-    # Create a new DOM FileReader instance
-    reader = window.FileReader.new()
-    # Read the file content as text
-    reader.readAsText(file)
-    reader.bind("load", onload)
+    schematic = parser(event.target.result)
     
-@bind(tikz_btn, "click")
-def draw_file(ev):
+    CANVAS.draw(schematic)
+
+def redraw(event):
+    # TODO: make this more efficient by caching schematic
+    CANVAS.draw(parser(document.getElementById("content").innerText))
+
+async def process_file(x):
+    fileList = document.getElementById('file-upload').files
+
+    for f in fileList:
+        # reader is a pyodide.JsProxy
+        reader = FileReader.new()
+
+        # Create a Python proxy for the callback function
+        onload_event = create_proxy(read_complete)
+
+        #console.log("done")
+
+        reader.onload = onload_event
+
+        reader.readAsText(f)
+
+        return
+
+def main():
     
-    data = document['file_text'].value
+    set_running()
+    # Create a Python proxy for the callback function
+    file_event = create_proxy(process_file)
+    redraw_event = create_proxy(redraw)
+
+    # Set the listener to the callback
+    e = document.getElementById("file-upload")
+    e.addEventListener("change", file_event, False)
     
-    
-    
-    document['output'].value = data
+    canvas.addEventListener("redraw", redraw_event, False)
+
+main()
