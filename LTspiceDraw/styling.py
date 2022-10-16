@@ -34,7 +34,8 @@ class Color:
         return "COLOR OBJECT: \t" + self.name + "\t\t" + self.hex() + "\t\t" + str(self.rgb())
 
 class Colors(Enum):
-    black = Color(0, 0, 0, name="Black")
+    unassigned  = Color(0, 0, 0, name="Black (Unassigned)")
+    black       = Color(0, 0, 0, name="Black")
     
     def __call__(self):
         return self.value
