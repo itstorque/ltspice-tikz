@@ -1,9 +1,17 @@
 <html>
     <head>
         <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
     </head>
 
     <body onload="brython()">
+        <script type="text/python" src="LTspiceDraw/styling.py" id="Styling"></script>
+        <script type="text/python" src="LTspiceDraw/circuit.py" id="Circuit"></script>
+        <script type="text/python" src="LTspiceDraw/drawer.py" id="Drawer"></script>
+        <script type="text/python" src="LTspiceDraw/geometry.py" id="Geometry"></script>
+        <script type="text/python" src="LTspiceDraw/reader.py" id="Reader"></script>
+        <script type="text/python" src="LTspiceDraw/tikz-export.py" id="TikzExport"></script>
+        
         <script type="text/python" src="web.py"></script>
 
         <h1>LTspice-tikz test</h1>

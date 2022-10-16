@@ -34,7 +34,7 @@ jobs:
         uses: actions/configure-pages@v2
       - name: Move LTspiceDraw
         working-directory: .
-        run: cp -r LTspiceDraw web/LTspiceDraw
+        run: rm web/LTspiceDraw; cp -r LTspiceDraw web/LTspiceDraw
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:

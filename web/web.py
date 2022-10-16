@@ -6,11 +6,17 @@
 # # bind event 'click' on button to function echo
 # document["echo"].bind("click", click)
 
-from browser import bind, window, document
+from browser import bind, window, document, ajax
+
+# impor
+
+import Circuit, Drawer, Geometry, Reader, Styling, TikzExport
 
 load_btn = document["file_source"]
 tikz_btn = document["to_tikz"]
 copy_btn = document["copy"]
+
+print(Circuit.CircuitSchematic)
 
 @bind(load_btn, "input")
 def file_read(ev):

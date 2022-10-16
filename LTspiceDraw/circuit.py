@@ -1,5 +1,3 @@
-from styling import *
-
 class CircuitSchematic:
     
     def __init__(self) -> None:

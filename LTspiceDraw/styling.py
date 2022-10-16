@@ -5,7 +5,6 @@ class LineStyle(Enum):
     dashed = 1
     dotted = 2
 
-
 class Color:
     
     def __init__(self, p1=None, p2=None, p3=None, name=None) -> None:

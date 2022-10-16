@@ -1,9 +1,4 @@
 # TODO: add coordinate object...
-
-import numpy as np
-from matplotlib.lines import lineStyles
-from styling import *
-
 class Geometry:
     
     def __init__(self, linestyle=LineStyle.solid, color=Colors.unassigned) -> None:
@@ -30,7 +25,7 @@ class Geometry:
     def from_ltspice_gui_command(self, coords):
         # a class method that initializes asy and asc Geometrys
         
-        coords = [np.floor(float(c)/50*100)/100 for c in coords]
+        coords = [math.floor(float(c)/50*100)/100 for c in coords]
         
         style = coords[-1]
     
@@ -97,8 +92,8 @@ class Circle(Arc):
         
         super().from_ltspice_gui_command(coords)
 
-        pos = np.array(coords[0:2])
-        size = abs(pos - coords[2:4])/2
+        pos = coords[0:2]
+        size = [abs(i - j)/2 for i, j in zip(pos, coords[2:4])]
         
         pos += size
         
