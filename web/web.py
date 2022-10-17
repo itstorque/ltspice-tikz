@@ -8,6 +8,8 @@ canvas = document.getElementById("canvas")
 ctx = canvas.getContext("2d")
 CANVAS = HTML_Canvas_Exporter(ctx)
 
+document.schematic = None
+
 def set_running():
 	document.getElementById("status").innerHTML = 'Python loaded and running ...'
  
@@ -16,14 +18,24 @@ def read_complete(event):
 
     content = document.getElementById("content")
     content.innerText = event.target.result
-
-    schematic = parser(event.target.result)
     
-    CANVAS.draw(schematic)
+    document.schematic = parser(event.target.result)
+    
+    redraw(None)
 
 def redraw(event):
     # TODO: make this more efficient by caching schematic
-    CANVAS.draw(parser(document.getElementById("content").innerText))
+    
+    canvas =  document.getElementById("canvas")
+    ctx = canvas.getContext("2d")
+    
+    ctx.save()
+    ctx.setTransform(1,0,0,1,0,0)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.restore()
+    
+    if document.schematic:
+        CANVAS.draw(document.schematic)
 
 async def process_file(x):
     fileList = document.getElementById('file-upload').files

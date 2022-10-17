@@ -10,6 +10,9 @@ class Exporter:
     def draw_arc(self, arc):
         pass
     
+    def draw_rectangle(self, rectangle):
+        pass
+    
     def draw_circle(self, circle):
         pass
     
@@ -43,16 +46,19 @@ class HTML_Canvas_Exporter(Exporter):
         self.ctx.lineTo(*line.end)
         self.ctx.stroke()
     
+    def draw_rectangle(self, rectangle):
+        
+        self.ctx.beginPath()
+        self.ctx.rect(*rectangle.start, *rectangle.end)
+        self.ctx.stroke()
+    
     def draw_circle(self, circle):
         
-        # self.ctx.beginPath()
-        # self.ctx.lineWidth = line.thickness
-        # self.ctx.lineCap = line.line_cap
-        # self.ctx.moveTo(*line.start)
-        # self.ctx.lineTo(*line.end)
-        # self.ctx.stroke()
+        self.ctx.beginPath()
+        self.ctx.arc(*circle.center, circle.size[0], 0, 2 * np.pi)
+        self.ctx.stroke()
         
-        self.draw_arc(circle)
+        # self.draw_arc(circle)
         
     def draw_arc(self, arc):
         

@@ -18,6 +18,7 @@ class CMD(Enum):
     SHEET = "SHEET"
     
     LINE = "LINE"
+    RECTANGLE = "RECTANGLE"
     ARC = "ARC"
     CIRCLE = "CIRCLE"
     TEXT = "TEXT"
@@ -39,6 +40,8 @@ class Command:
         match self.command:
             case CMD.LINE:
                 schematic.add( Line.from_ltspice_gui_command(self.args) )
+            case CMD.RECTANGLE:
+                schematic.add( Rectangle.from_ltspice_gui_command(self.args) )
             case CMD.ARC:
                 schematic.add( Arc.from_ltspice_gui_command(self.args) )
             case CMD.CIRCLE:

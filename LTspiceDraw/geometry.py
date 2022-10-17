@@ -9,7 +9,7 @@ class Geometry:
         self.linestyle = linestyle
         self.color = color
         self.line_cap = "square"
-        self.thickness = 1
+        self.thickness = 0.3
     
     def set_style(self, style):
         if style in LineStyle:
@@ -121,6 +121,11 @@ class Circle(Arc):
         
     def tikz(self) -> str:
         return f"\draw ({self.center[0]},{self.center[1]}) ellipse ({self.size[0]} and {self.size[1]});"
+
+class Rectangle(Line):
+    # A rectangle is defined by 2 corners, given a Line, it can only correspond to one line...
+    pass
+    
         
 class Symbol(Geometry):
     
