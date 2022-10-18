@@ -3,6 +3,16 @@
         <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
         <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+        <script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+        <script src="semantic/dist/semantic.min.js"></script>
+
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
+
     </head>
 
     <bod>
@@ -30,11 +40,6 @@
         
         
         <label for="Upload ASC/ASY"></label><input type="file" id="file-upload" accept=".asc,.asy">
-
-        <div class="button-group">
-            <button type="button" class="scale" data-scale="up">+</button>
-            <button type="button" class="scale" data-scale="down" disabled>-</button>
-        </div>
 
         <div id="mouse-pos"></div>
         <div id="transformed-mouse-pos"></div>

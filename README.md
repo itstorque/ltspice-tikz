@@ -1,5 +1,7 @@
 # LTspice Tikz
 
+[In development]: [itstorque.com/ltspice-tikz/](itstorque.com/ltspice-tikz/)
+
 This program converts LTspice schematics and symbols (`.asc` or `.asy` 
 files) into LaTeX Tikz code. This package draws each symbol in the 
 schematic from its original symbol removing the need to create your own

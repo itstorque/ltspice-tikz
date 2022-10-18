@@ -3,13 +3,14 @@ from styling import *
 
 # TODO: add coordinate object...
 class Geometry:
+    # TODO: implement rotation
     
     def __init__(self, linestyle=LineStyle.solid, color=Colors.unassigned) -> None:
         
         self.linestyle = linestyle
         self.color = color
         self.line_cap = "square"
-        self.thickness = 0.3
+        self.thickness = 1
     
     def set_style(self, style):
         if style in LineStyle:
@@ -109,8 +110,14 @@ class Circle(Arc):
         
     @classmethod
     def from_ltspice_gui_command(self, coords):
+        # SPICE COMMAND EXAMPLE FOR current source
+        # at loc 1248, 16 rotated 90deg: 
+        # SYMBOL current 1248 16 R90
         
-        coords = [float(i) for i in coords[1:5]]
+        coords = [float(i) for i in coords[1:3]]
+        
+        symbol = coords[0]
+        rotation_operator = coords[3]
 
         pos = np.array(coords[0:2])
         size = abs(pos - coords[2:4])/2
@@ -134,8 +141,10 @@ class Symbol(Geometry):
         
         self.geometries = set()
         
-    def add(self, geom):
-        self.geometries.add(geom)
+    @classmethod
+    def from_ltspice_gui_command(self, coords):
+        
+        pass
         
     def draw(self):
         

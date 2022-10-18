@@ -1,4 +1,4 @@
-from js import document, FileReader
+from js import document, FileReader, localStorage
 from pyodide import create_proxy
 
 from file_interface import parser
