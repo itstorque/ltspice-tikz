@@ -9,7 +9,7 @@ class SymbolStash:
     def __init__(self, directory_invariant=True):
         
         # Dictionary storing (str) symbol_name -> (str) symbol_loc
-        self.symbols_loc = {}
+        self.symbols_source = {}
         
         # Dictionary storing (str) symbol_name -> (list of Geometry objects) geometries
         self.compiled_symbols = {}
@@ -33,11 +33,15 @@ class SymbolStash:
         raise SymbolNotFound
     
     def get_symbol(self, symbol_name):
-        try:
-            print(self.get_symbols())
-            self.get_symbols()[symbol_name]
-        except KeyError:
-            self.missing_symbol(symbol_name)
+        if symbol_name not in self.symbols_source:
+            return self.missing_symbol(symbol_name)
+            
+        if symbol_name not in self.compiled_symbols:
+            # need to compile symbol here...
+            self.compiled_symbols[symbol_name] = parser(self.symbols_source[symbol_name], SymbolStash())
+            
+        return self.compiled_symbols[symbol_name]
+            
     
     def add_symbol(self, name, code):
         
@@ -57,9 +61,20 @@ class WebSymbolStash(SymbolStash):
         
         if self.localStorage.getItem(self.key) == None:
             self.localStorage.setItem(self.key, json.dumps({}))
+            
+        for name, source in self.get_dicts().items():
+            self.symbols_source[name] = source
+    
+    def add(self, name, source):
+        self.symbols_source[name] = source
         
+        schematic = parser(source, SymbolStash())
+        self.compiled_symbols[name] = schematic
+        
+        self.save()
+    
     def save(self):
-        self.localStorage.setItem(self.key, json.dumps(self.compiled_symbols))
+        self.localStorage.setItem(self.key, json.dumps(self.symbols_source))
     
     def get_dicts(self):
         return json.loads(self.localStorage.getItem(self.key))

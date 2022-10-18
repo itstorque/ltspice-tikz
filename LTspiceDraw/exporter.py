@@ -21,17 +21,29 @@ class Exporter:
     
     def draw(self, schematic):
         
-        print("EXPORTER.DRAW")
+        # print("EXPORTER.DRAW")
         
-        for elem in schematic.elements:
+        print(schematic.geometries)
+        
+        for elem in schematic.geometries:
             
-            print(type(elem))
+            # print(type(elem))
             
             if type(elem) == Line:
                 self.draw_line(elem)
                 
             elif type(elem) == Circle:
                 self.draw_circle(elem)
+                
+            elif type(elem) == Arc:
+                self.draw_arc(elem)
+                
+            elif type(elem) == Rectangle:
+                self.draw_rectangle(elem)
+                
+            elif type(elem) == Symbol:
+                print("RECURSE DRAW")
+                self.draw(elem)
                 
 class HTML_Canvas_Exporter(Exporter):
     def __init__(self, ctx):

@@ -5,7 +5,7 @@ from styling import *
 class Geometry:
     # TODO: implement rotation
     
-    def __init__(self, parent=None, linestyle=LineStyle.default, color=Colors.unassigned) -> None:
+    def __init__(self, parent=None, linestyle=LineStyle.default, color=Colors.unassigned, geometries=None) -> None:
         
         self.linestyle = linestyle
         self.color = color
@@ -48,6 +48,10 @@ class Geometry:
     def add_to_parent_from_ltspice_gui_command(self, parent, coords, *args, **kwargs):
         
         geomtery = self.from_ltspice_gui_command(coords, parent=parent, *args, **kwargs)
+        
+        if geomtery == None:
+            print("Geometry error :(")
+            return 
         
         if isinstance(geomtery, Geometry):
             return parent.add( geomtery )
@@ -171,11 +175,13 @@ class Symbol(Geometry):
         coords = [float(i) for i in cmd[1:3]]
         rotation = cmd[3]
         
-        kwargs["geometries"] = set()
+        symbol = parent.symbolstash.get_symbol(component_name)
         
-        print(parent.symbolstash.get_symbol(component_name))
-        
-        return Symbol(parent=parent, *args, **kwargs)
+        if symbol:
+            # This is being sent in with Symbol!
+            kwargs["geometries"] = symbol.geometries
+            
+            return Symbol(parent=parent, *args, **kwargs)
         
     def draw(self):
         

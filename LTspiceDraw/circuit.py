@@ -4,15 +4,13 @@ class CircuitSchematic:
     
     def __init__(self, symbolstash):
         
-        self.elements = set()
+        self.geometries = set()
         
         self.symbolstash = symbolstash
     
     def add(self, elem):
         
-        print(elem)
-        
-        self.elements.add(elem)
+        self.geometries.add(elem)
 
 class CircuitElement(CircuitSchematic):
     

@@ -42,13 +42,10 @@ async def process_file(x):
     fileList = document.getElementById('file-upload').files
 
     for f in fileList:
-        # reader is a pyodide.JsProxy
+
         reader = FileReader.new()
 
-        # Create a Python proxy for the callback function
         onload_event = create_proxy(read_complete)
-
-        #console.log("done")
 
         reader.onload = onload_event
 
@@ -59,16 +56,39 @@ async def process_file(x):
 def alert_method(title, msg):
     print("-----", title, "-----", msg)
 
+def add_symbol_from_source(event):
+    stash = WebSymbolStash(localStorage, "symbols", alert_method)
+    stash.add(event.target.filename.replace(".asy", ""), event.target.result)
+
+def add_symbols(event):
+    fileList = document.getElementById('symbol-upload').files
+    
+    for f in fileList:
+        
+        reader = FileReader.new()
+        
+        onload_event = create_proxy(add_symbol_from_source)
+        
+        reader.filename = f.name
+        
+        reader.onload = onload_event
+        
+        reader.readAsText(f)
+
 def main():
     
     set_running()
     # Create a Python proxy for the callback function
     file_event = create_proxy(process_file)
+    symbol_event = create_proxy(add_symbols)
     redraw_event = create_proxy(redraw)
 
     # Set the listener to the callback
     e = document.getElementById("file-upload")
     e.addEventListener("change", file_event, False)
+    
+    e = document.getElementById("symbol-upload")
+    e.addEventListener("change", symbol_event, False)
     
     canvas.addEventListener("redraw", redraw_event, False)
 
