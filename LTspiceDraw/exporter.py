@@ -19,15 +19,9 @@ class Exporter:
     def add_text(self, text_object):
         pass
     
-    def draw(self, schematic):
-        
-        # print("EXPORTER.DRAW")
-        
-        print(schematic.geometries)
+    def draw(self, schematic, shifted=None):
         
         for elem in schematic.geometries:
-            
-            # print(type(elem))
             
             if type(elem) == Line:
                 self.draw_line(elem)
@@ -42,7 +36,6 @@ class Exporter:
                 self.draw_rectangle(elem)
                 
             elif type(elem) == Symbol:
-                print("RECURSE DRAW")
                 self.draw(elem)
                 
 class HTML_Canvas_Exporter(Exporter):

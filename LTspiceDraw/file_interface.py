@@ -74,6 +74,8 @@ def parser(raw, symbolstash):
     
     last_symbol = None
     
+    raw = raw.replace("\x00", "")
+    
     for cmd in raw.split("\n")[1:]:
         
         if cmd != "":

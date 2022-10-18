@@ -33,6 +33,9 @@ class SymbolStash:
         raise SymbolNotFound
     
     def get_symbol(self, symbol_name):
+        
+        symbol_name = self.format_name(symbol_name)
+        
         if symbol_name not in self.symbols_source:
             return self.missing_symbol(symbol_name)
             
@@ -42,11 +45,15 @@ class SymbolStash:
             
         return self.compiled_symbols[symbol_name]
             
-    
-    def add_symbol(self, name, code):
+    def format_name(self, name):
         
         if self.directory_invariant:
             name = Path(name).name
+            
+        return name.lower()
+    
+    def add_symbol(self, name, code):
+        name = self.format_name(name)
         
         self.compiled_symbols[name] = parser(code)
         
@@ -66,6 +73,8 @@ class WebSymbolStash(SymbolStash):
             self.symbols_source[name] = source
     
     def add(self, name, source):
+        name = self.format_name(name)
+        
         self.symbols_source[name] = source
         
         schematic = parser(source, SymbolStash())
@@ -87,6 +96,7 @@ class WebSymbolStash(SymbolStash):
         return self.get_dicts()#[1] 
     
     def missing_symbol(self, name):
+        name = self.format_name(name)
         # Symbol Not Found, prompt user to upload
         if self.alert_method==None:
             super().missing_symbol(name)

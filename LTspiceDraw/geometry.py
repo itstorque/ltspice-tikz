@@ -69,6 +69,11 @@ class Line(Geometry):
         self.start = (point1[0], point1[1])
         self.end   = (point2[0], point2[1])
         
+    def move_to(self, pos):
+        
+        self.start = ( self.start[0]+pos[0], self.start[1]+pos[1] )
+        self.end   = (   self.end[0]+pos[0],   self.end[1]+pos[1] )
+        
     @classmethod
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
         # super().from_ltspice_gui_command(coords)
@@ -102,6 +107,10 @@ class Arc(Geometry):
             
         self.center = center
         self.size = size
+        
+    def move_to(self, pos):
+        self.center[0] += pos[0]
+        self.center[1] += pos[1]
         
     @classmethod
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
@@ -159,6 +168,10 @@ class Symbol(Geometry):
         
         if "geometries" in kwargs:
             self.geometries = kwargs["geometries"]
+            
+            for geom in self.geometries:
+                geom.move_to(self.pos)
+                
         else:
             self.geometries = set()
         
@@ -175,9 +188,13 @@ class Symbol(Geometry):
         coords = [float(i) for i in cmd[1:3]]
         rotation = cmd[3]
         
+        self.pos = coords
+        self.rotation = rotation # TODO: implement rotating a symbol
+        
         symbol = parent.symbolstash.get_symbol(component_name)
         
         if symbol:
+            
             # This is being sent in with Symbol!
             kwargs["geometries"] = symbol.geometries
             
