@@ -2,9 +2,11 @@ from styling import *
 
 class CircuitSchematic:
     
-    def __init__(self):
+    def __init__(self, symbolstash):
         
         self.elements = set()
+        
+        self.symbolstash = symbolstash
     
     def add(self, elem):
         

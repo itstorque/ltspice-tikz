@@ -37,28 +37,30 @@ class Command:
         return self.command.value + " < " + str(self.args)
     
     def __call__(self, schematic, last_symbol=None):
+        # can add a component in here using either:
+        #   schematic.add( Line.from_ltspice_gui_command(self.args) )
+        # OR
+        #   Line.add_to_parent_from_ltspice_gui_command(schematic, self.args)
         
         match self.command:
             
             case CMD.LINE:
-                schematic.add( Line.from_ltspice_gui_command(self.args) )
+                Line.add_to_parent_from_ltspice_gui_command(schematic, self.args)
             case CMD.RECTANGLE:
-                schematic.add( Rectangle.from_ltspice_gui_command(self.args) )
+                Rectangle.add_to_parent_from_ltspice_gui_command(schematic, self.args)
             case CMD.ARC:
-                schematic.add( Arc.from_ltspice_gui_command(self.args) )
+                Arc.add_to_parent_from_ltspice_gui_command(schematic, self.args)
             case CMD.CIRCLE:
-                schematic.add( Circle.from_ltspice_gui_command(self.args) )
+                Circle.add_to_parent_from_ltspice_gui_command(schematic, self.args)
                 
             case CMD.TEXT:
                 # schematic.add( Text.from_ltspice_gui_command(self.args) )
                 pass #TODO: implement text object
                 
             case CMD.WIRE:
-                schematic.add( Wire.from_ltspice_gui_command(self.args) )
+                Wire.add_to_parent_from_ltspice_gui_command(schematic, self.args)
             case CMD.SYMBOL:
-                symbol = Symbol.from_ltspice_gui_command(self.args)
-                schematic.add( *symbol )
-                return symbol
+                Symbol.add_to_parent_from_ltspice_gui_command(schematic, self.args)
             
             case CMD.SYMATTR:
                 pass # TODO: implement things that rely on last_symbol
@@ -66,9 +68,9 @@ class Command:
             case _:
                 pass # raise NotImplemented
 
-def parser(raw):
+def parser(raw, symbolstash):
     
-    c = CircuitSchematic()
+    c = CircuitSchematic(symbolstash=symbolstash)
     
     last_symbol = None
     

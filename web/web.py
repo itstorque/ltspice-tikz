@@ -3,6 +3,7 @@ from pyodide import create_proxy
 
 from file_interface import parser
 from exporter import HTML_Canvas_Exporter
+from symbols import WebSymbolStash
 
 canvas = document.getElementById("canvas")
 ctx = canvas.getContext("2d")
@@ -19,7 +20,7 @@ def read_complete(event):
     content = document.getElementById("content")
     content.innerText = event.target.result
     
-    document.schematic = parser(event.target.result)
+    document.schematic = parser(event.target.result, symbolstash=WebSymbolStash(localStorage, "symbols", alert_method))
     
     redraw(None)
 
@@ -54,6 +55,9 @@ async def process_file(x):
         reader.readAsText(f)
 
         return
+
+def alert_method(title, msg):
+    print("-----", title, "-----", msg)
 
 def main():
     

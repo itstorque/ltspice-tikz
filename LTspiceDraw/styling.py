@@ -1,6 +1,7 @@
 from enum import Enum
 
 class LineStyle(Enum):
+    default = -1
     solid  = 0
     dashed = 1
     dotted = 2

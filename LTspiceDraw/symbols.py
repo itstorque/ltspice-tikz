@@ -1,4 +1,4 @@
-from yaml import parse
+import json
 from file_interface import *
 
 class SymbolNotFound(Exception):
@@ -22,8 +22,9 @@ class SymbolStash:
     def get_dicts(self):
         raise NotImplementedError
         
-    def get_locs(self):
-        raise NotImplementedError
+    # disabled locs storage because we need json
+    # def get_locs(self):
+    #     raise NotImplementedError
         
     def get_symbols(self):
         raise NotImplementedError
@@ -33,7 +34,8 @@ class SymbolStash:
     
     def get_symbol(self, symbol_name):
         try:
-            self.get_symbols[symbol_name]
+            print(self.get_symbols())
+            self.get_symbols()[symbol_name]
         except KeyError:
             self.missing_symbol(symbol_name)
     
@@ -46,27 +48,34 @@ class SymbolStash:
         
 class WebSymbolStash(SymbolStash):
     
-    def __init__(self, localStorage, key, directory_invariant=True):
+    def __init__(self, localStorage, key, alert_method, directory_invariant=True):
         super().__init__(directory_invariant)
         
         self.localStorage = localStorage
         self.key = key
+        self.alert_method = alert_method
+        
+        if self.localStorage.getItem(self.key) == None:
+            self.localStorage.setItem(self.key, json.dumps({}))
         
     def save(self):
-        self.localStorage.setItem(self.key, (self.symbols_loc, self.compiled_symbols))
+        self.localStorage.setItem(self.key, json.dumps(self.compiled_symbols))
     
     def get_dicts(self):
-        return self.localStorage.getItem(self.key)
+        return json.loads(self.localStorage.getItem(self.key))
         
-    def get_locs(self):
-        return self.get_dicts()[0]
+    # disabled locs storage because we need json
+    # def get_locs(self):
+    #     return self.get_dicts()[0]
         
     def get_symbols(self):
-        return self.get_dicts()[1] 
+        return self.get_dicts()#[1] 
     
     def missing_symbol(self, name):
         # Symbol Not Found, prompt user to upload
-        return # TODO: Implement this
+        if self.alert_method==None:
+            super().missing_symbol(name)
+        return self.alert_method("Missing symbol " + name, "Upload this symbol to use this circuit")
     
 class LocalSymbolStash(SymbolStash):
     pass # TODO: Implement a way to read directories and get the symbol files...
