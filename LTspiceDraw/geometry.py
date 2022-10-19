@@ -2,16 +2,22 @@ import numpy as np
 from styling import *
 
 # TODO: add coordinate object...
+# TODO: probably remove all *args...
 class Geometry:
     # TODO: implement rotation
     
-    def __init__(self, parent=None, linestyle=LineStyle.default, color=Colors.unassigned, geometries=None) -> None:
+    def __init__(self, parent=None, linestyle=LineStyle.default, color=Colors.unassigned, geometries=None, *args, **kwargs) -> None:
         
         self.linestyle = linestyle
         self.color = color
         self.line_cap = "square"
         self.thickness = 1
         self.parent = parent
+        
+        self.rotation = 0
+        self.reflected = False
+        
+        self.name = kwargs["name"] if "name" in kwargs else "Geometry"
         
         # TODO: not used as of now...
         self.has_children = False 
@@ -34,15 +40,30 @@ class Geometry:
     @classmethod
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
         # a class method that initializes asy and asc Geometrys
-        # TODO: this is not doing anything as of now... Change inehrent resolution here? idk...
+        pass
         
-        for i in range(len(coords)):
-            try: 
-                coords[i] = np.floor(float(coords[i])/50*100)/100
-            except:
-                coords[i] = coords[i]
+        # transformation = coords[-1]
         
-        style = coords[-1]
+        # # print(coords)
+        # # print(">>>", transformation, transformation[0])
+        
+        # if transformation[0] == "R":
+        #     # rotated
+        #     self.rotation = float(transformation[1:])
+        #     self.reflected = True
+        # elif transformation[0] == "M":
+        #     # reflected and rotated
+        #     self.rotation = float(transformation[1:])
+        #     self.reflected = False
+        
+        # TODO: migrate to better code snapping in here instead of in children...
+        # for i in range(len(coords)):
+        #     try: 
+        #         coords[i] = np.floor(float(coords[i])/50*100)/100
+        #     except:
+        #         coords[i] = coords[i]
+        
+        # style = coords[-1]
         
     @classmethod
     def add_to_parent_from_ltspice_gui_command(self, parent, coords, *args, **kwargs):
@@ -69,14 +90,14 @@ class Line(Geometry):
         self.start = (point1[0], point1[1])
         self.end   = (point2[0], point2[1])
         
-    def move_to(self, pos):
+    # def move_to(self, pos):
         
-        self.start = ( self.start[0]+pos[0], self.start[1]+pos[1] )
-        self.end   = (   self.end[0]+pos[0],   self.end[1]+pos[1] )
+    #     self.start = ( self.start[0]+pos[0], self.start[1]+pos[1] )
+    #     self.end   = (   self.end[0]+pos[0],   self.end[1]+pos[1] )
         
     @classmethod
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
-        # super().from_ltspice_gui_command(coords)
+        # super().from_ltspice_gui_command(coords, *args, **kwargs)
         
         # linestyle = LineStyle(coords[0]) # TODO: check what NORMAL does in LINE syntax...
         
@@ -108,12 +129,13 @@ class Arc(Geometry):
         self.center = center
         self.size = size
         
-    def move_to(self, pos):
-        self.center[0] += pos[0]
-        self.center[1] += pos[1]
+    # def move_to(self, pos):
+    #     self.center[0] += pos[0]
+    #     self.center[1] += pos[1]
         
     @classmethod
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
+        # super().from_ltspice_gui_command(coords, *args, **kwargs)
         
         coords = [float(i) for i in coords[1:9]]
         
@@ -123,10 +145,12 @@ class Arc(Geometry):
         
         center = (pos + coords[2:4])/2
         
-        angle = lambda v: np.degrees(np.arctan2(v[1], v[0]))
+        angle = lambda v: np.arctan2(v[1], v[0])
         
         theta_i = angle(coords[6:8]-center)
         theta_f = angle(coords[4:6]-center)
+        
+        print(theta_i, theta_f)
         
         return Arc(center=center, size=size, theta_span=(theta_i, theta_f), *args, **kwargs)
         
@@ -140,6 +164,7 @@ class Circle(Arc):
         
     @classmethod
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
+        # Geometry.from_ltspice_gui_command(coords, *args, **kwargs)
         # SPICE COMMAND EXAMPLE FOR current source
         # at loc 1248, 16 rotated 90deg: 
         # SYMBOL current 1248 16 R90
@@ -169,27 +194,56 @@ class Symbol(Geometry):
         if "geometries" in kwargs:
             self.geometries = kwargs["geometries"]
             
-            for geom in self.geometries:
-                geom.move_to(self.pos)
+            # for geom in self.geometries:
+            #     geom.move_to(self.pos)
                 
         else:
             self.geometries = set()
         
         self.has_children = True
         
+        if "pos" in kwargs: 
+            self.pos = kwargs["pos"]
+        else: 
+            self.pos = (0, 0)
+        
+        if "rotation" in kwargs: 
+            self.rotation = kwargs["rotation"]
+        else: 
+            self.rotation = 0
+        
+        if "reflected" in kwargs: 
+            self.reflected = kwargs["reflected"]
+        else: 
+            self.reflected = False
+        
     @classmethod
     def from_ltspice_gui_command(self, cmd, parent, *args, **kwargs):
+        # super().from_ltspice_gui_command(cmd, *args, **kwargs)
+        
+        component_name = cmd[0]
+        coords = [float(i) for i in cmd[1:3]]
+        transformation = cmd[-1]
+        
+        kwargs["name"] = component_name
+        
+        # print(coords)
+        # print(">>>", transformation, transformation[0])
+        
+        if transformation[0] == "R":
+            # rotated
+            kwargs["rotation"] = float(transformation[1:])
+            kwargs["reflected"] = False
+        elif transformation[0] == "M":
+            # reflected and rotated
+            kwargs["rotation"] = float(transformation[1:])
+            kwargs["reflected"] = True
         
         self.parent = parent
         
         # TODO: set parent of sub-lines to component...
         
-        component_name = cmd[0]
-        coords = [float(i) for i in cmd[1:3]]
-        rotation = cmd[3]
-        
-        self.pos = coords
-        self.rotation = rotation # TODO: implement rotating a symbol
+        kwargs["pos"] = coords
         
         symbol = parent.symbolstash.get_symbol(component_name)
         

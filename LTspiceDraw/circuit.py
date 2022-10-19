@@ -7,6 +7,13 @@ class CircuitSchematic:
         self.geometries = set()
         
         self.symbolstash = symbolstash
+        
+        self.pos = (0, 0)
+        
+        self.rotation = 0
+        self.reflected = False
+        
+        self.name = "CircuitSchematic"
     
     def add(self, elem):
         

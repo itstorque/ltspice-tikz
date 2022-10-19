@@ -19,7 +19,16 @@ class Exporter:
     def add_text(self, text_object):
         pass
     
-    def draw(self, schematic, shifted=None):
+    def draw(self, schematic):
+        
+        # apply transformation into the frame of reference of the component
+        self.ctx.translate(*schematic.pos)
+        self.ctx.scale(-1 if schematic.reflected else 1, 1)
+        self.ctx.rotate(np.deg2rad(schematic.rotation))
+        
+        print(schematic.name, schematic.pos, schematic.rotation, schematic.reflected)
+        
+        print(np.deg2rad(schematic.rotation))
         
         for elem in schematic.geometries:
             
@@ -36,7 +45,16 @@ class Exporter:
                 self.draw_rectangle(elem)
                 
             elif type(elem) == Symbol:
+                print("CALL 1", elem.rotation)
                 self.draw(elem)
+               
+        # apply inverse of transformation done before drawing 
+        # Order matters... Since we applied translation(x,y), reflect(T), rotate(θ)
+        # we need to apply (translation(x,y), reflect(T), rotate(θ))^(-1)
+        # = rotate(-θ), reflect(T), translation(-x,-y)
+        self.ctx.rotate(-np.deg2rad(schematic.rotation))
+        self.ctx.scale(-1 if schematic.reflected else 1, 1)
+        self.ctx.translate(-schematic.pos[0], -schematic.pos[1])
                 
 class HTML_Canvas_Exporter(Exporter):
     def __init__(self, ctx):
@@ -67,11 +85,11 @@ class HTML_Canvas_Exporter(Exporter):
         
     def draw_arc(self, arc):
         
-        rotation = 0 # TODO: add rotation...
-        
         self.ctx.beginPath()
-        self.ctx.ellipse(*arc.center, *arc.size, rotation, 0, 2 * np.pi)
+        self.ctx.ellipse(*arc.center, *arc.size, 0, *arc.theta_span) # TODO: rotation is 0 here
         self.ctx.stroke()
+        
+        self.ctx.restore()
     
 class tikz_Exporter(Exporter):
     pass
