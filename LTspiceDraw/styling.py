@@ -8,12 +8,14 @@ class LineStyle(Enum):
 
 class Color:
     
-    def __init__(self, p1=None, p2=None, p3=None, name=None) -> None:
+    def __init__(self, p1=None, p2=None, p3=None, name=None, unassigned=False) -> None:
         
         self.name = name if name else "Color"
         
+        self.unassigned = True
+        
         if type(p1)==str and p1[0] == "#" and p2 == None and p3 == None:
-            self.color = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+            self.color = tuple(int(p1[i:i+2], 16) for i in (1, 3, 5))
             
         elif p1 != None and p2 != None and p3 != None:
             self.color = (p1, p2, p3)
@@ -29,12 +31,20 @@ class Color:
     def r(self):   return self.color[0]
     def g(self):   return self.color[1]
     def b(self):   return self.color[2]
+    
+    def fallback(self, fallback_color):
+        if self.unassigned:
+            self.color = fallback_color().color
+        return self.color
+    
+    def __call__(self, *args, **kwds):
+        return self
 
     def __str__(self) -> str:
         return "COLOR OBJECT: \t" + self.name + "\t\t" + self.hex() + "\t\t" + str(self.rgb())
 
 class Colors(Enum):
-    unassigned  = Color(0, 0, 0, name="Black (Unassigned)")
+    unassigned  = Color(0, 0, 0, name="Black (Unassigned)", unassigned=True)
     black       = Color(0, 0, 0, name="Black")
     
     def __call__(self):

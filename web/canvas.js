@@ -77,6 +77,10 @@ function onWheel(event) {
 
 }
 
+function missing_symbol_error() {
+    $("#missing_symbol").modal("show");
+}
+
 canvas.addEventListener('mousedown', onMouseDown);
 canvas.addEventListener('mousemove', onMouseMove);
 canvas.addEventListener('mouseup', onMouseUp);
@@ -84,3 +88,10 @@ canvas.addEventListener('wheel', onWheel);
 
 window.addEventListener('load',   setupCanvas);
 window.addEventListener('resize', setupCanvas);
+
+var colorPicker = new iro.ColorPicker('#picker');
+
+colorPicker.on('color:change', function(color) {
+    // log the current color as a HEX string
+    render();
+});

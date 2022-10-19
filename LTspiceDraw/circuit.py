@@ -14,6 +14,12 @@ class CircuitSchematic:
         self.reflected = False
         
         self.name = "CircuitSchematic"
+        
+        self.color = Colors.unassigned
+        
+    def set_color(self, color):
+        # TODO: add check to see if color is instance of Color or Colors...
+        self.color = Color(color)
     
     def add(self, elem):
         

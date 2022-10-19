@@ -37,6 +37,9 @@ class Geometry:
     def tikz(self) -> str:
         return ""
     
+    def set_color(self, color):
+        self.color = color
+    
     @classmethod
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
         # a class method that initializes asy and asc Geometrys
@@ -68,16 +71,18 @@ class Geometry:
     @classmethod
     def add_to_parent_from_ltspice_gui_command(self, parent, coords, *args, **kwargs):
         
-        geomtery = self.from_ltspice_gui_command(coords, parent=parent, *args, **kwargs)
+        geometry = self.from_ltspice_gui_command(coords, parent=parent, *args, **kwargs)
         
-        if geomtery == None:
+        geometry.set_color(parent.color)
+        
+        if geometry == None:
             print("Geometry error :(")
             return 
         
-        if isinstance(geomtery, Geometry):
-            return parent.add( geomtery )
+        if isinstance(geometry, Geometry):
+            return parent.add( geometry )
         
-        for sub_geometry in geomtery:
+        for sub_geometry in geometry:
             parent.add( sub_geometry )
         
         return True
@@ -149,8 +154,6 @@ class Arc(Geometry):
         
         theta_i = angle(coords[6:8]-center)
         theta_f = angle(coords[4:6]-center)
-        
-        print(theta_i, theta_f)
         
         return Arc(center=center, size=size, theta_span=(theta_i, theta_f), *args, **kwargs)
         
@@ -227,9 +230,6 @@ class Symbol(Geometry):
         
         kwargs["name"] = component_name
         
-        # print(coords)
-        # print(">>>", transformation, transformation[0])
-        
         if transformation[0] == "R":
             # rotated
             kwargs["rotation"] = float(transformation[1:])
@@ -253,6 +253,11 @@ class Symbol(Geometry):
             kwargs["geometries"] = symbol.geometries
             
             return Symbol(parent=parent, *args, **kwargs)
+    
+    def set_color(self, color):
+        self.color = color
+        for geom in self.geometries:
+            geom.color = color
         
     def draw(self):
         

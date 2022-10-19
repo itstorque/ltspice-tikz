@@ -21,16 +21,20 @@ class Exporter:
     
     def draw(self, schematic):
         
+        # TODO: move these to only be in the HTML_canvas_exporter class
+        
         # apply transformation into the frame of reference of the component
         self.ctx.translate(*schematic.pos)
         self.ctx.scale(-1 if schematic.reflected else 1, 1)
         self.ctx.rotate(np.deg2rad(schematic.rotation))
         
-        print(schematic.name, schematic.pos, schematic.rotation, schematic.reflected)
-        
-        print(np.deg2rad(schematic.rotation))
-        
         for elem in schematic.geometries:
+            
+            elem.color().fallback(schematic.color())
+            
+            print(elem.color(), schematic.color())
+            
+            self.ctx.strokeStyle = elem.color().hex()
             
             if type(elem) == Line:
                 self.draw_line(elem)
@@ -45,7 +49,6 @@ class Exporter:
                 self.draw_rectangle(elem)
                 
             elif type(elem) == Symbol:
-                print("CALL 1", elem.rotation)
                 self.draw(elem)
                
         # apply inverse of transformation done before drawing 

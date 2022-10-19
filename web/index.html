@@ -4,19 +4,33 @@
         <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 
-        <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
         <script
         src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
         crossorigin="anonymous"></script>
-        <script src="semantic/dist/semantic.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js" integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
+
+        <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
 
     </head>
 
     <bod>
         <!-- <script type="text/python" src="web.py"></script> -->
+
+        <div class="ui tiny modal" id="missing_symbol">
+            <div class="header">Missing Symbol</div>
+            <div class="scrolling content">
+                <p>One or more symbols in this schematic are missing. Make sure you upload all the 
+                    symbols you are using by clicking the upload button.</p>
+            </div>
+            <div class="actions">
+                <div class="ui positive button">Add Symbols</div>
+                <div class="ui cancel button">Ok</div>
+            </div>
+        </div>
 
         <h1>LTspice-tikz test</h1>
 
@@ -43,6 +57,8 @@
         <label for="Upload ASC/ASY"></label><input type="file" id="file-upload" accept=".asc,.asy">
 
         <label for="Upload ASY"></label><input type="file" id="symbol-upload" accept=".asy">
+
+        <div id="picker"></div>
 
         <div id="mouse-pos"></div>
         <div id="transformed-mouse-pos"></div>

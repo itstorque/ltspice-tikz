@@ -1,3 +1,4 @@
+import js
 from js import document, FileReader, localStorage
 from pyodide import create_proxy
 
@@ -20,7 +21,7 @@ def read_complete(event):
     content = document.getElementById("content")
     content.innerText = event.target.result
     
-    document.schematic = parser(event.target.result, symbolstash=WebSymbolStash(localStorage, "symbols", alert_method))
+    document.schematic = parser(event.target.result, symbolstash=WebSymbolStash(localStorage, "symbols", symbol_missing_method))
     
     redraw(None)
 
@@ -34,6 +35,10 @@ def redraw(event):
     ctx.setTransform(1,0,0,1,0,0)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.restore()
+    
+    print("SET", js.colorPicker.color.hexString)
+    
+    document.schematic.set_color(js.colorPicker.color.hexString)
     
     if document.schematic:
         CANVAS.draw(document.schematic)
@@ -53,11 +58,12 @@ async def process_file(x):
 
         return
 
-def alert_method(title, msg):
+def symbol_missing_method(title, msg):
+    js.missing_symbol_error()
     print("-----", title, "-----", msg)
 
 def add_symbol_from_source(event):
-    stash = WebSymbolStash(localStorage, "symbols", alert_method)
+    stash = WebSymbolStash(localStorage, "symbols", symbol_missing_method)
     stash.add(event.target.filename.replace(".asy", ""), event.target.result)
 
 def add_symbols(event):
