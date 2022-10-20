@@ -32,8 +32,6 @@ class Exporter:
             
             elem.color().fallback(schematic.color())
             
-            print(elem.color(), schematic.color())
-            
             self.ctx.strokeStyle = elem.color().hex()
             
             if type(elem) == Line:

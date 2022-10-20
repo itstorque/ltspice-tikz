@@ -52,11 +52,36 @@
 
 
         <py-script output="out" src="./web.py"></py-script>
-        
-        
-        <label for="Upload ASC/ASY"></label><input type="file" id="file-upload" accept=".asc,.asy">
 
-        <label for="Upload ASY"></label><input type="file" id="symbol-upload" accept=".asy">
+        <input type="file" id="file-upload" accept=".asc,.asy" hidden>
+
+        <label for="file-upload" class="ui labeled green icon button">
+            <i class="ui upload icon"></i> 
+            Upload Schematic
+        </label>
+
+        <button class="ui labeled icon button">
+            <i class="loading spinner icon"></i>
+            Import Sybmols
+        </button>
+
+        <input type="file" id="symbol-upload-folder" accept=".asy" webkitdirectory multiple hidden>
+        <input type="file" id="symbol-upload" accept=".asy" multiple hidden>
+
+        <label for="symbol-upload" class="ui labeled icon button">
+            <i class="ui folder open icon"></i> 
+            Import Sybmol to Library
+        </label>
+
+        <label for="symbol-upload" class="ui labeled icon button">
+            <i class="ui folder icon"></i> 
+            Import Sybmol Folder
+        </label>
+        
+        
+        <!-- <label for=""></label> -->
+
+        <!-- <label for="Upload ASY"></label><input type="file" id="symbol-upload" accept=".asy" webkitdirectory multiple> -->
 
         <div id="picker"></div>
 

@@ -66,6 +66,8 @@ class WebSymbolStash(SymbolStash):
         self.key = key
         self.alert_method = alert_method
         
+        self.loaded_dict = None
+        
         if self.localStorage.getItem(self.key) == None:
             self.localStorage.setItem(self.key, json.dumps({}))
             
@@ -86,7 +88,9 @@ class WebSymbolStash(SymbolStash):
         self.localStorage.setItem(self.key, json.dumps(self.symbols_source))
     
     def get_dicts(self):
-        return json.loads(self.localStorage.getItem(self.key))
+        if self.loaded_dict==None:
+            self.loaded_dict = json.loads(self.localStorage.getItem(self.key))
+        return self.loaded_dict
         
     # disabled locs storage because we need json
     # def get_locs(self):

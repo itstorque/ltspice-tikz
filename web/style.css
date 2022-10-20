@@ -1,0 +1,41 @@
+.wrap {
+min-height: 100vh;
+max-width: 720px;
+margin: 0 auto;
+display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: center;
+}
+.wrap .half {
+width: 50%;
+padding: 32px 0;
+}
+
+#values {
+font-family: monospace;
+line-height: 150%;
+}
+
+.swatchGrid {
+display: grid;
+grid-template-columns: repeat(6, 28px);
+grid-template-rows: repeat(2, 28px);
+grid-gap: 6px;
+margin-bottom: 1em;
+}
+
+.swatch {
+border-radius: 4px;
+cursor: pointer;
+}
+
+a {
+color: MediumSlateBlue;
+}
+
+#styling_popup {
+    align-items: center;
+    text-align: center;
+
+}

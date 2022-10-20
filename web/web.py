@@ -36,9 +36,7 @@ def redraw(event):
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.restore()
     
-    print("SET", js.colorPicker.color.hexString)
-    
-    document.schematic.set_color(js.colorPicker.color.hexString)
+    document.schematic.set_color( js.colorPicker.color.hexString )
     
     if document.schematic:
         CANVAS.draw(document.schematic)

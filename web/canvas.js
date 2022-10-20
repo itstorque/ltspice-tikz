@@ -89,9 +89,46 @@ canvas.addEventListener('wheel', onWheel);
 window.addEventListener('load',   setupCanvas);
 window.addEventListener('resize', setupCanvas);
 
-var colorPicker = new iro.ColorPicker('#picker');
+var colorPicker = new iro.ColorPicker('#picker', {
+    // color picker options
+    // Option guide: https://iro.js.org/guide.html#color-picker-options
+    width: 190,
+    color: "rgb(0, 0, 0)",
+    borderWidth: 1,
+    borderColor: "#fff",
+    layout: [
+        {
+          component: iro.ui.Box,
+        },
+        {
+          component: iro.ui.Slider,
+          options: {
+            id: 'hue-slider',
+            sliderType: 'hue'
+          }
+        }
+      ]
+  });
 
 colorPicker.on('color:change', function(color) {
     // log the current color as a HEX string
     render();
 });
+
+var swatchGrid = document.getElementById('swatch-grid');
+
+swatchGrid.addEventListener('click', function(e) {
+  var clickTarget = e.target;
+  // read data-color attribute
+  if (clickTarget.dataset.color) {
+    // update the color picker
+    colorPicker.color.set(clickTarget.dataset.color);
+  }
+});
+
+$('#styling_button')
+  .popup({
+    popup : $('#styling_popup'),
+    inline: true
+  })
+;

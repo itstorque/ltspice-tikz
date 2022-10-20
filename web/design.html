@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+        <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+
+        <script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js" integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
+
+        <script src="https://cdn.jsdelivr.net/npm/@jaames/iro/dist/iro.min.js"></script>
+
+        <link rel="stylesheet" href="style.css" />
+
+    </head>
+
+    <body>
+        <!-- <script type="text/python" src="web.py"></script> -->
+
+        <canvas id="canvas" style="background-color:#888; width: 100vw; height: 100vh; position: fixed; top: 0;"></canvas>
+
+        <div class="ui tiny modal" id="missing_symbol">
+            <div class="header">Missing Symbol</div>
+            <div class="scrolling content">
+                <p>One or more symbols in this schematic are missing. Make sure you upload all the 
+                    symbols you are using by clicking the upload button.</p>
+            </div>
+            <div class="actions">
+                <div class="ui positive button">Add Symbols</div>
+                <div class="ui cancel button">Ok</div>
+            </div>
+        </div>
+
+        <input type="file" id="file-upload" accept=".asc,.asy" hidden>
+        
+        <div class="ui borderless small menu" style="position: fixed; top: 0; width: 96vw; left: 2vw">
+            <label for="file-upload" class="ui active green button item">
+                <i class="upload icon"></i>
+                Upload Schematic
+            </label>
+            <div class="right menu">
+                <a class="red item" id="styling_button">
+                    <i class="paint brush icon"></i>
+                    Styling
+                </a>
+
+
+                <div class="ui popup transition hidden" id="styling_popup">
+                    <div class="half">
+                      <div id="picker" class="colorPicker"></div>
+                    </div>
+        
+                    <div class="swatchGrid" id="swatch-grid">
+                        <div class="swatch" data-color="#ffffff" style="background: #ffffff"></div>
+                        <div class="swatch" data-color="#5f2cdd" style="background: #5f2cdd"></div>
+                        <div class="swatch" data-color="#752c53" style="background: #752c53"></div>
+                        <div class="swatch" data-color="#3b8456" style="background: #3b8456"></div>
+                        <div class="swatch" data-color="#a0563d" style="background: #a0563d"></div>
+                        <div class="swatch" data-color="#5f5850" style="background: #5f5850"></div>
+                        <div class="swatch" data-color="#c3c3c6" style="background: #c3c3c6"></div>
+                        <div class="swatch" data-color="#edf145" style="background: #edf1ff"></div>
+                        
+                        <div class="swatch" data-color="#da3855" style="background: #da3855"></div>
+                        <div class="swatch" data-color="#eda541" style="background: #eda541"></div>
+                        <div class="swatch" data-color="#f5ea5a" style="background: #f5ea5a"></div>
+                        <div class="swatch" data-color="#75b85b" style="background: #75b85b"></div>
+                        <div class="swatch" data-color="#66a5d7" style="background: #66a5d7"></div>
+                        <div class="swatch" data-color="#817799" style="background: #817799"></div>
+                        <div class="swatch" data-color="#e17ea5" style="background: #e17ea5"></div>
+                        <div class="swatch" data-color="#f4cdaf" style="background: #f4cdaf"></div>
+                    </div>
+                </div>
+
+                
+                <a class="blue item">
+                    <i class="folder open icon"></i>
+                    Symbol Library
+                </a>
+            </div>
+          </div>
+
+            <!-- <div class="wrap" class="width: 190px">
+                <div class="half">
+                  <div id="picker" class="colorPicker"></div>
+                </div>
+                <div class="half readout">
+                  <div class="swatchGrid" id="swatch-grid">
+                    <div class="swatch" data-color="#ffffff" style="background: #ffffff"></div>
+                    <div class="swatch" data-color="#5f2cdd" style="background: #5f2cdd"></div>
+                    <div class="swatch" data-color="#752c53" style="background: #752c53"></div>
+                    <div class="swatch" data-color="#3b8456" style="background: #3b8456"></div>
+                    <div class="swatch" data-color="#a0563d" style="background: #a0563d"></div>
+                    <div class="swatch" data-color="#5f5850" style="background: #5f5850"></div>
+                    <div class="swatch" data-color="#c3c3c6" style="background: #c3c3c6"></div>
+                    <div class="swatch" data-color="#edf145" style="background: #edf1ff"></div>
+                    
+                    <div class="swatch" data-color="#da3855" style="background: #da3855"></div>
+                    <div class="swatch" data-color="#eda541" style="background: #eda541"></div>
+                    <div class="swatch" data-color="#f5ea5a" style="background: #f5ea5a"></div>
+                    <div class="swatch" data-color="#75b85b" style="background: #75b85b"></div>
+                    <div class="swatch" data-color="#66a5d7" style="background: #66a5d7"></div>
+                    <div class="swatch" data-color="#817799" style="background: #817799"></div>
+                    <div class="swatch" data-color="#e17ea5" style="background: #e17ea5"></div>
+                    <div class="swatch" data-color="#f4cdaf" style="background: #f4cdaf"></div>
+                  </div>
+                </div>
+              </div> -->
+
+          </div>
+
+        <!-- <input type="file" id="file-upload" accept=".asc,.asy" hidden>
+
+        <label for="file-upload" class="ui labeled green icon button">
+            <i class="ui upload icon"></i> 
+            Upload Schematic
+        </label>
+
+        <input type="file" id="symbol-upload-folder" accept=".asy" webkitdirectory multiple hidden>
+        <input type="file" id="symbol-upload" accept=".asy" multiple hidden>
+
+        <label for="symbol-upload" class="ui labeled icon button">
+            <i class="ui folder open icon"></i> 
+            Import Sybmol to Library
+        </label>
+
+        <label for="symbol-upload" class="ui labeled icon button">
+            <i class="ui folder icon"></i> 
+            Import Sybmol Folder
+        </label> -->
+        
+        
+        <!-- <label for=""></label> -->
+
+        <!-- <label for="Upload ASY"></label><input type="file" id="symbol-upload" accept=".asy" webkitdirectory multiple> -->
+
+        
+
+        <!-- <div id="picker"></div> -->
+
+        <div id="mouse-pos"></div>
+        <div id="transformed-mouse-pos"></div>
+
+        <div id="out"></div>
+
+        <p id="content"></p>
+
+        <script src="canvas.js"></script>
+
+    </body>
+</html>

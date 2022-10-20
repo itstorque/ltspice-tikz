@@ -29,8 +29,6 @@ def cleanup_text(text):
 
 def rotate_vec(vec, deg):
     
-    print(vec)
-    
     theta = np.deg2rad(deg)
     rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
     return np.dot(rot, vec)
