@@ -39,3 +39,11 @@ color: MediumSlateBlue;
     text-align: center;
 
 }
+
+/* #out:empty {
+    display: None;
+} */
+
+#to_color_dropdown a {
+    width:max-content;
+}

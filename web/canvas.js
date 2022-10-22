@@ -81,6 +81,10 @@ function missing_symbol_error() {
     $("#missing_symbol").modal("show");
 }
 
+function toColorObject() {
+    return $("#to_color_dropdown").dropdown("get value")
+}
+
 canvas.addEventListener('mousedown', onMouseDown);
 canvas.addEventListener('mousemove', onMouseMove);
 canvas.addEventListener('mouseup', onMouseUp);
@@ -129,6 +133,47 @@ swatchGrid.addEventListener('click', function(e) {
 $('#styling_button')
   .popup({
     popup : $('#styling_popup'),
-    inline: true
+    inline: true,
+    on: "click"
+  })
+;
+
+$('#to_color_dropdown')
+  .dropdown({
+    values: [
+      {
+        name: 'Schematic',
+        value: 'schematic',
+        selected: true
+      },
+      {
+        name: 'Background',
+        value: 'background'
+      },
+      {
+        name: 'Components',
+        value: 'components'
+      },
+      {
+        name: 'Wires',
+        value: 'wires'
+      },
+      {
+        name: 'Flags',
+        value: 'flags'
+      },
+      {
+        name: 'Text',
+        value: 'text'
+      },
+      {
+        name: 'Comments',
+        value: 'comments'
+      },
+      {
+        name: 'Commands',
+        value: 'Commands'
+      }
+    ]
   })
 ;

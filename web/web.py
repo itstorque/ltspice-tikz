@@ -5,15 +5,15 @@ from pyodide import create_proxy
 from file_interface import parser
 from exporter import HTML_Canvas_Exporter
 from symbols import WebSymbolStash
+from circuit import CircuitSchematic
 
 canvas = document.getElementById("canvas")
 ctx = canvas.getContext("2d")
 CANVAS = HTML_Canvas_Exporter(ctx)
 
-document.schematic = None
-
 def set_running():
-	document.getElementById("status").innerHTML = 'Python loaded and running ...'
+    pass # TODO: change this to a visual thing.
+	# document.getElementById("status").innerHTML = 'Python loaded and running ...'
  
 def read_complete(event):
     # event is ProgressEvent
@@ -24,6 +24,10 @@ def read_complete(event):
     document.schematic = parser(event.target.result, symbolstash=WebSymbolStash(localStorage, "symbols", symbol_missing_method))
     
     redraw(None)
+
+def get_color_target():
+    
+    return js.toColorObject().split(",")
 
 def redraw(event):
     # TODO: make this more efficient by caching schematic
@@ -36,7 +40,13 @@ def redraw(event):
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.restore()
     
-    document.schematic.set_color( js.colorPicker.color.hexString )
+    target, color = get_color_target(), js.colorPicker.color.hexString
+    
+    if "schematic" in target:
+        document.schematic.set_color( color )
+    
+    if "background" in target:
+        document.schematic.background_color = color
     
     if document.schematic:
         CANVAS.draw(document.schematic)
@@ -80,6 +90,8 @@ def add_symbols(event):
         reader.readAsText(f)
 
 def main():
+    
+    document.schematic = CircuitSchematic(WebSymbolStash(localStorage, "symbols", symbol_missing_method))
     
     set_running()
     # Create a Python proxy for the callback function

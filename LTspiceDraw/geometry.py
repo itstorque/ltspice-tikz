@@ -193,6 +193,9 @@ class Symbol(Geometry):
     
     def __init__(self, parent, *args, **kwargs) -> None:
         super().__init__(parent=parent, *args, **kwargs)
+        # TODO: inherit SChematic???
+        
+        self.backgroundColor = None
         
         if "geometries" in kwargs:
             self.geometries = kwargs["geometries"]

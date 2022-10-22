@@ -42,6 +42,8 @@ class Color:
 
     def __str__(self) -> str:
         return "COLOR OBJECT: \t" + self.name + "\t\t" + self.hex() + "\t\t" + str(self.rgb())
+    
+    def __bool__(self): return self.unassigned
 
 class Colors(Enum):
     unassigned  = Color(0, 0, 0, name="Black (Unassigned)", unassigned=True)

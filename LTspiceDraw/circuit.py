@@ -17,6 +17,8 @@ class CircuitSchematic:
         
         self.color = Colors.unassigned
         
+        self.backgroundColor = Colors.unassigned
+        
     def set_color(self, color):
         # TODO: add check to see if color is instance of Color or Colors...
         self.color = Color(color)

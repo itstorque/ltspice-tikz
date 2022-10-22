@@ -13,29 +13,15 @@
 
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
 
-        <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jaames/iro/dist/iro.min.js"></script>
+
+        <link rel="stylesheet" href="style.css" />
 
     </head>
 
-    <bod>
-        <!-- <script type="text/python" src="web.py"></script> -->
+    <body>
 
-        <div class="ui tiny modal" id="missing_symbol">
-            <div class="header">Missing Symbol</div>
-            <div class="scrolling content">
-                <p>One or more symbols in this schematic are missing. Make sure you upload all the 
-                    symbols you are using by clicking the upload button.</p>
-            </div>
-            <div class="actions">
-                <div class="ui positive button">Add Symbols</div>
-                <div class="ui cancel button">Ok</div>
-            </div>
-        </div>
-
-        <h1>LTspice-tikz test</h1>
-
-        <div id="status">Loading page ...</div>
-        <br>
+        <canvas id="canvas" style="background-color:#888; width: 100vw; height: 100vh; position: fixed; top: 0;"></canvas>
 
         <py-config type="toml">
             packages = ["numpy"]
@@ -53,48 +39,106 @@
 
         <py-script output="out" src="./web.py"></py-script>
 
+        <div class="ui tiny modal" id="missing_symbol">
+            <div class="header">Missing Symbol</div>
+            <div class="content">
+                <p>One or more symbols in this schematic are missing. Make sure you upload all the 
+                    symbols you are using by clicking the upload button.</p>
+            </div>
+            <div class="actions">
+                <div class="ui positive button">Add Symbols</div>
+                <div class="ui cancel button">Ok</div>
+            </div>
+        </div>
+
+        <div class="ui tiny modal" id="add_symbol">
+
+            <div class="header">Missing Symbol</div>
+
+            <p id="out"></p>
+
+            <input type="file" id="file-upload" accept=".asc,.asy" hidden>
+
+            <label for="file-upload" class="ui labeled green icon button">
+                <i class="ui upload icon"></i> 
+                Upload Schematic
+            </label>
+
+            <div class="actions">
+
+                <input type="file" id="symbol-upload-folder" accept=".asy" webkitdirectory multiple hidden>
+                <input type="file" id="symbol-upload" accept=".asy" multiple hidden>
+
+                <label for="symbol-upload" class="ui labeled icon button">
+                    <i class="ui folder open icon"></i> 
+                    Import Sybmol to Library
+                </label>
+
+                <label for="symbol-upload" class="ui labeled icon button">
+                    <i class="ui folder icon"></i> 
+                    Import Sybmol Folder
+                </label>
+            </div>
+        </div>
+
         <input type="file" id="file-upload" accept=".asc,.asy" hidden>
-
-        <label for="file-upload" class="ui labeled green icon button">
-            <i class="ui upload icon"></i> 
-            Upload Schematic
-        </label>
-
-        <button class="ui labeled icon button">
-            <i class="loading spinner icon"></i>
-            Import Sybmols
-        </button>
-
-        <input type="file" id="symbol-upload-folder" accept=".asy" webkitdirectory multiple hidden>
-        <input type="file" id="symbol-upload" accept=".asy" multiple hidden>
-
-        <label for="symbol-upload" class="ui labeled icon button">
-            <i class="ui folder open icon"></i> 
-            Import Sybmol to Library
-        </label>
-
-        <label for="symbol-upload" class="ui labeled icon button">
-            <i class="ui folder icon"></i> 
-            Import Sybmol Folder
-        </label>
         
+        <div class="ui borderless small menu" style="position: fixed; top: 0; width: 96vw; left: 2vw">
+            <label for="file-upload" class="ui active green button item">
+                <i class="upload icon"></i>
+                Upload Schematic
+            </label>
+            <div class="right menu">
+                <a class="red item" id="styling_button">
+                    <i class="paint brush icon"></i>
+                    Styling
+                </a>
+
+
+                <div class="ui popup transition hidden" id="styling_popup">
+                    <div class="half">
+                      <div id="picker" class="colorPicker"></div>
+                    </div>
+
+                    <br />
         
-        <!-- <label for=""></label> -->
+                    <div class="swatchGrid" id="swatch-grid">
+                        <div class="swatch" data-color="#ffffff" style="background: #ffffff"></div>
+                        <div class="swatch" data-color="#5f2cdd" style="background: #5f2cdd"></div>
+                        <div class="swatch" data-color="#752c53" style="background: #752c53"></div>
+                        <div class="swatch" data-color="#3b8456" style="background: #3b8456"></div>
+                        <div class="swatch" data-color="#a0563d" style="background: #a0563d"></div>
+                        <div class="swatch" data-color="#5f5850" style="background: #5f5850"></div>
+                        
+                        <div class="swatch" data-color="#da3855" style="background: #da3855"></div>
+                        <div class="swatch" data-color="#eda541" style="background: #eda541"></div>
+                        <div class="swatch" data-color="#f5ea5a" style="background: #f5ea5a"></div>
+                        <div class="swatch" data-color="#75b85b" style="background: #75b85b"></div>
+                        <div class="swatch" data-color="#66a5d7" style="background: #66a5d7"></div>
+                        <div class="swatch" data-color="#817799" style="background: #817799"></div>
+                    </div>
 
-        <!-- <label for="Upload ASY"></label><input type="file" id="symbol-upload" accept=".asy" webkitdirectory multiple> -->
+                    <div class="ui multiple selection fluid dropdown" id="to_color_dropdown">
+                        <input type="hidden" name="to_color">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">Schematic</div>
+                    </div>
 
-        <div id="picker"></div>
+                </div>
 
-        <div id="mouse-pos"></div>
-        <div id="transformed-mouse-pos"></div>
+                
+                <a class="blue item">
+                    <i class="folder open icon"></i>
+                    Symbol Library
+                </a>
+            </div>
+          </div>
 
-        <canvas id="canvas" style="background-color:#888; width: 100vw; height: 100vh;"></canvas>
-
-        <div id="out"></div>
+          </div>
+        
+        <script src="canvas.js"></script>
 
         <p id="content"></p>
-
-        <script src="canvas.js"></script>
 
     </body>
 </html>
