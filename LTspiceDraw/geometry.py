@@ -3,6 +3,7 @@ from styling import *
 
 # TODO: add coordinate object...
 # TODO: probably remove all *args...
+# TODO: port all tikz calls to a new TikzExporter
 class Geometry:
     # TODO: implement rotation
     
@@ -268,12 +269,41 @@ class Symbol(Geometry):
     
 class Wire(Line):
     
+    def __init__(self, point1, point2, *args, **kwargs) -> None:
+        super().__init__(point1, point2, *args, **kwargs)
+        
+        self.ports = { # wire has two ports, a symmetric input and output port
+            Port(self, point1, "0"),
+            Port(self, point2, "1")
+        }
+    
     @classmethod
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
         return super().from_ltspice_gui_command( [0] + coords, *args, **kwargs )
 
 class Text(Geometry):
-    pass
+    
+    def __init__(self, anchor, text, **kwargs) -> None:
+        super().__init__(**kwargs)
+        
+        self.pos = anchor
+        self.text = text
+    
+    @classmethod
+    def from_ltspice_gui_command(self, cmd, *args, **kwargs):
+        return Text(cmd[0], cmd[1])
 
 class Flag(Text):
     pass
+
+class Ground(Flag):
+    pass
+
+class Port(Flag):
+    
+    def __init__(self, parent, pos, name):
+        
+        self.parent = parent
+        self.pos = pos
+        self.name = name
+        

@@ -51,6 +51,19 @@
             </div>
         </div>
 
+        <div class="ui tiny modal" id="source_code">
+            <div class="header">File Source</div>
+            <div class="content">
+                <code class="language-markdown" id="source_code_value">
+                    TEST
+                </code>
+            </div>
+            <div class="actions">
+                <div class="ui positive button">Add Symbols</div>
+                <div class="ui cancel button">Ok</div>
+            </div>
+        </div>
+
         <div class="ui tiny modal" id="add_symbol">
 
             <div class="header">Missing Symbol</div>
@@ -89,11 +102,26 @@
                 Upload Schematic
             </label>
             <div class="right menu">
+
+                <a class="blue item">
+                    <i class="film icon"></i>
+                    Animate
+                </a>
+
+                <a class="blue item" id="source_code_button">
+                    <i class="code icon"></i>
+                    Source
+                </a>
+
+                <a class="blue item">
+                    <i class="object ungroup outline icon"></i>
+                    Simulation
+                </a>
+
                 <a class="red item" id="styling_button">
                     <i class="paint brush icon"></i>
                     Styling
                 </a>
-
 
                 <div class="ui popup transition hidden" id="styling_popup">
                     <div class="half">
@@ -137,8 +165,6 @@
           </div>
         
         <script src="canvas.js"></script>
-
-        <p id="content"></p>
 
     </body>
 </html>

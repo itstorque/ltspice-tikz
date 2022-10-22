@@ -27,6 +27,24 @@ class CircuitSchematic:
         
         self.geometries.add(elem)
 
+class OrderedCircuitSchematic(CircuitSchematic):
+    
+    def __init__(self, symbolstash):
+        super().__init__(symbolstash)
+        
+        # dict that stores node loc -> geometries at that loc
+        self.node_elements = {} 
+        
+    def add(self, elem):
+        super().add(elem)
+        
+        for port in elem.ports:
+            
+            if port.loc in self.node_elements:
+                self.node_elements[port.loc].add(port)
+            else:
+                self.node_elements[port.loc] = port
+
 class CircuitElement(CircuitSchematic):
     
     def __init__(self):

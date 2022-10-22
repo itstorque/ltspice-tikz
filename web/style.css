@@ -47,3 +47,8 @@ color: MediumSlateBlue;
 #to_color_dropdown a {
     width:max-content;
 }
+
+.modal .content:has(code) {
+    max-height: 60vh;
+    overflow-y: scroll;
+}

@@ -138,6 +138,14 @@ $('#styling_button')
   })
 ;
 
+$('#source_code_button')
+  .popup({
+    popup : $('#source_code'),
+    inline: true,
+    on: "click"
+  })
+;
+
 $('#to_color_dropdown')
   .dropdown({
     values: [

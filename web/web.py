@@ -18,7 +18,7 @@ def set_running():
 def read_complete(event):
     # event is ProgressEvent
 
-    content = document.getElementById("content")
+    content = document.getElementById("source_code_value")
     content.innerText = event.target.result
     
     document.schematic = parser(event.target.result, symbolstash=WebSymbolStash(localStorage, "symbols", symbol_missing_method))
