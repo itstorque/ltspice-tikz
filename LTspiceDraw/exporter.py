@@ -53,6 +53,9 @@ class Exporter:
             elif type(elem) == Rectangle:
                 self.draw_rectangle(elem)
                 
+            elif type(elem) == Text:
+                self.add_text(elem)
+                
             elif type(elem) == Symbol:
                 self.draw(elem)
                
@@ -99,6 +102,15 @@ class HTML_Canvas_Exporter(Exporter):
         self.ctx.stroke()
         
         self.ctx.restore()
+        
+    def add_text(self, text_object):
+        
+        print("TEXT")
+        print(text_object)
+        
+        self.ctx.font = '48px serif';#text_object.font
+        self.ctx.fillText(text_object.text, *text_object.pos)
+    
     
 class tikz_Exporter(Exporter):
     pass

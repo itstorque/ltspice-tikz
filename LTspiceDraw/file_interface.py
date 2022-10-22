@@ -54,8 +54,7 @@ class Command:
                 Circle.add_to_parent_from_ltspice_gui_command(schematic, self.args)
                 
             case CMD.TEXT:
-                # schematic.add( Text.from_ltspice_gui_command(self.args) )
-                pass #TODO: implement text object
+                Text.add_to_parent_from_ltspice_gui_command(schematic, self.args)
                 
             case CMD.WIRE:
                 Wire.add_to_parent_from_ltspice_gui_command(schematic, self.args)

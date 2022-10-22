@@ -93,8 +93,8 @@ class Line(Geometry):
     def __init__(self, point1, point2, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         
-        self.start = (point1[0], point1[1])
-        self.end   = (point2[0], point2[1])
+        self.start = Coord(point1[0], point1[1])
+        self.end   = Coord(point2[0], point2[1])
         
     # def move_to(self, pos):
         
@@ -107,7 +107,7 @@ class Line(Geometry):
         
         # linestyle = LineStyle(coords[0]) # TODO: check what NORMAL does in LINE syntax...
         
-        coords = [float(i) for i in coords[1:5]]
+        coords = Coord(coords[1:5])
         
         return Line(coords[0:2], coords[2:4], *args, **kwargs)#, linestyle=linestyle)
         
@@ -143,9 +143,9 @@ class Arc(Geometry):
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
         # super().from_ltspice_gui_command(coords, *args, **kwargs)
         
-        coords = [float(i) for i in coords[1:9]]
+        coords = Coord(coords[1:9])
         
-        pos = np.array(coords[0:2])
+        pos = coords[0:2].as_array()
                 
         size = abs(pos - coords[2:4])/2
         
@@ -173,9 +173,11 @@ class Circle(Arc):
         # at loc 1248, 16 rotated 90deg: 
         # SYMBOL current 1248 16 R90
         
-        coords = [float(i) for i in coords[1:5]]
+        coords = Coord(coords[1:5])
+        
+        print(coords, coords[0:2])
 
-        pos = np.array(coords[0:2])
+        pos = coords[0:2].as_array()
         size = abs(pos - coords[2:4])/2
         
         pos += size
@@ -210,9 +212,9 @@ class Symbol(Geometry):
         self.has_children = True
         
         if "pos" in kwargs: 
-            self.pos = kwargs["pos"]
+            self.pos = Coord(kwargs["pos"])
         else: 
-            self.pos = (0, 0)
+            self.pos = Coord(0, 0)
         
         if "rotation" in kwargs: 
             self.rotation = kwargs["rotation"]
@@ -229,7 +231,7 @@ class Symbol(Geometry):
         # super().from_ltspice_gui_command(cmd, *args, **kwargs)
         
         component_name = cmd[0]
-        coords = [float(i) for i in cmd[1:3]]
+        coords = Coord(cmd[1:3])
         transformation = cmd[-1]
         
         kwargs["name"] = component_name
@@ -273,8 +275,8 @@ class Wire(Line):
         super().__init__(point1, point2, *args, **kwargs)
         
         self.ports = { # wire has two ports, a symmetric input and output port
-            Port(self, point1, "0"),
-            Port(self, point2, "1")
+            Port(self, Coord(point1), "0"),
+            Port(self, Coord(point2), "1")
         }
     
     @classmethod
@@ -283,7 +285,7 @@ class Wire(Line):
 
 class Text(Geometry):
     
-    def __init__(self, anchor, text, **kwargs) -> None:
+    def __init__(self, anchor, text, text_align="left", font_size=2, **kwargs) -> None:
         super().__init__(**kwargs)
         
         self.pos = anchor
@@ -291,7 +293,9 @@ class Text(Geometry):
     
     @classmethod
     def from_ltspice_gui_command(self, cmd, *args, **kwargs):
-        return Text(cmd[0], cmd[1])
+        # TEXT 152 552 Left 2 !comment with spaces in it
+        
+        return Text(Coord(cmd[0], cmd[1]), ' '.join(cmd[4:]), text_align=cmd[2].lower())
 
 class Flag(Text):
     pass
@@ -307,3 +311,23 @@ class Port(Flag):
         self.pos = pos
         self.name = name
         
+class Coord(tuple):
+    
+    def __new__(self, *args):
+        if (isinstance(args[0], Coord) or \
+            isinstance(args[0], list ) or \
+            isinstance(args[0], tuple) ) and len(args)==1:
+            # return tuple.__new__(Coord, args[0])
+            args = args[0]
+        
+        return tuple.__new__(Coord, (float(i) for i in args))
+    
+    def as_array(self):
+        return np.array(self)
+    
+    def __getitem__(self, *args):
+        
+        if not isinstance(args[0], slice):
+            return super().__getitem__(*args)
+        
+        return Coord(*super().__getitem__(*args))
