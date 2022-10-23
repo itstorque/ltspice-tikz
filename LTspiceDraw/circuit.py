@@ -1,3 +1,4 @@
+from geometry import *
 from styling import *
 
 class CircuitSchematic:
@@ -18,6 +19,15 @@ class CircuitSchematic:
         self.color = Colors.unassigned
         
         self.backgroundColor = Colors.unassigned
+        
+        self.commentColor = Colors.unassigned
+        self.commandColor = Colors.unassigned
+        
+    def textColor(self, type):
+        if type == TextNetlist.Command:
+            return self.commandColor
+        elif type == TextNetlist.Comment:
+            return self.commentColor
         
     def set_color(self, color):
         # TODO: add check to see if color is instance of Color or Colors...

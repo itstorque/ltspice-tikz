@@ -6,6 +6,7 @@ from file_interface import parser
 from exporter import HTML_Canvas_Exporter
 from symbols import WebSymbolStash
 from circuit import CircuitSchematic
+from styling import Color
 
 canvas = document.getElementById("canvas")
 ctx = canvas.getContext("2d")
@@ -27,7 +28,7 @@ def read_complete(event):
 
 def get_color_target():
     
-    return js.toColorObject().split(",")
+    return js.toColorObject().lower().split(",")
 
 def redraw(event):
     # TODO: make this more efficient by caching schematic
@@ -40,13 +41,23 @@ def redraw(event):
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.restore()
     
-    target, color = get_color_target(), js.colorPicker.color.hexString
+    target, color = get_color_target(), Color(js.colorPicker.color.hexString)
     
     if "schematic" in target:
-        document.schematic.set_color( color )
+        document.schematic.color = color
     
     if "background" in target:
-        document.schematic.background_color = color
+        document.schematic.backgroundColor = color
+        
+    if "text" in target:
+        document.schematic.commentColor = color
+        document.schematic.commandColor = color
+        
+    if "comment" in target:
+        document.schematic.commentColor = color
+        
+    if "command" in target:
+        document.schematic.commandColor = color
     
     if document.schematic:
         CANVAS.draw(document.schematic)

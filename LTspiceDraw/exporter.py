@@ -24,9 +24,7 @@ class Exporter:
         if schematic.backgroundColor:
             # self.ctx.fillStyle = schematic.backgroundColor;
             # self.ctx.fillRect(0, 0, self.canvas.width, self.canvas.height);
-            self.canvas.style.backgroundColor = schematic.backgroundColor
-            print(self.canvas)
-            print(schematic.backgroundColor)
+            self.canvas.style.backgroundColor = schematic.backgroundColor().hex()
         
         # TODO: move these to only be in the HTML_canvas_exporter class
         
@@ -54,6 +52,7 @@ class Exporter:
                 self.draw_rectangle(elem)
                 
             elif type(elem) == Text:
+                elem.color().fallback(schematic.textColor(elem.type))
                 self.add_text(elem)
                 
             elif type(elem) == Symbol:
@@ -108,8 +107,10 @@ class HTML_Canvas_Exporter(Exporter):
         print("TEXT")
         print(text_object)
         
-        self.ctx.font = '48px serif';#text_object.font
-        self.ctx.fillText(text_object.text, *text_object.pos)
+        self.ctx.fillStyle = text_object.color().hex()
+        
+        self.ctx.font = str(text_object.font_size) + 'pt sans-serif';#text_object.font
+        self.ctx.fillText(text_object.text, *text_object.get_pos("left"))
     
     
 class tikz_Exporter(Exporter):

@@ -156,31 +156,38 @@ $('#to_color_dropdown')
       },
       {
         name: 'Background',
-        value: 'background'
+        value: 'background',
+        selected: false
       },
       {
         name: 'Components',
-        value: 'components'
+        value: 'components',
+        selected: false
       },
       {
         name: 'Wires',
-        value: 'wires'
+        value: 'wires',
+        selected: false
       },
       {
         name: 'Flags',
-        value: 'flags'
+        value: 'flags',
+        selected: false
       },
       {
         name: 'Text',
-        value: 'text'
+        value: 'text',
+        selected: false
       },
       {
         name: 'Comments',
-        value: 'comments'
+        value: 'comments',
+        selected: false
       },
       {
         name: 'Commands',
-        value: 'Commands'
+        value: 'Commands',
+        selected: false
       }
     ]
   })

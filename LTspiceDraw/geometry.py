@@ -1,5 +1,11 @@
 import numpy as np
 from styling import *
+    
+class TextNetlist(Enum):
+    Unknown    = -1
+    Comment    = 0
+    Command    = 1
+    SymbolText = 2
 
 # TODO: add coordinate object...
 # TODO: probably remove all *args...
@@ -285,17 +291,43 @@ class Wire(Line):
 
 class Text(Geometry):
     
-    def __init__(self, anchor, text, text_align="left", font_size=2, **kwargs) -> None:
+    def __init__(self, anchor, text, text_align="left", font_size=20, color=Colors.unassigned, type=TextNetlist.Unknown, **kwargs) -> None:
         super().__init__(**kwargs)
         
-        self.pos = anchor
+        self.pos  = anchor
         self.text = text
+        
+        self.font_size = font_size
+        self.text_align = text_align
+        
+        self.color = color
+        
+        self.type = type
+        
+    def get_pos(self, loc):
+        
+        match loc:
+            case "top left": 
+                return self.pos
+            case "left":
+                return Coord(self.pos[0], self.pos[1] + self.font_size/2)
     
     @classmethod
     def from_ltspice_gui_command(self, cmd, *args, **kwargs):
         # TEXT 152 552 Left 2 !comment with spaces in it
         
-        return Text(Coord(cmd[0], cmd[1]), ' '.join(cmd[4:]), text_align=cmd[2].lower())
+        font_size = [0.625, 1, 1.5, 2, 2.5, 3.5, 5, 7][int(cmd[3])] * 12
+        
+        text = ' '.join(cmd[4:])
+        
+        if text[0] == ";": 
+            type = TextNetlist.Comment
+            text = text[1:]
+        elif text[0] == "!": 
+            type = TextNetlist.Command
+            text = text[1:]
+        
+        return Text(Coord(cmd[0], cmd[1]), text, text_align=cmd[2].lower(), font_size=font_size, type=type)
 
 class Flag(Text):
     pass
