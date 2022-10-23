@@ -8,8 +8,8 @@
         src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
         crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js" integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.0/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.0/dist/semantic.min.js"></script>
 
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
 
@@ -30,6 +30,7 @@
                 "./LTspiceDraw/drawer.py", 
                 "./LTspiceDraw/geometry.py", 
                 "./LTspiceDraw/file_interface.py",
+                "./LTspiceDraw/built_in_symbols.py",
                 "./LTspiceDraw/styling.py",
                 "./LTspiceDraw/exporter.py",
                 "./LTspiceDraw/symbols.py",
@@ -157,6 +158,14 @@
                         <i class="dropdown icon"></i>
                         <div class="default text">Schematic</div>
                     </div>
+
+                    <div class="ui horizontal divider">
+                    Lines
+                    </div>
+
+                    <div class="ui bottom aligned labeled slider" id="line_thickness"></div>
+
+                    
 
                 </div>
 

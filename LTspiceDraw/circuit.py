@@ -18,7 +18,7 @@ class CircuitSchematic:
         
         self.color = Colors.unassigned
         
-        self.backgroundColor = Colors.unassigned
+        self.backgroundColor = Colors.unassigned_alt
         
         self.commentColor = Colors.unassigned
         self.commandColor = Colors.unassigned

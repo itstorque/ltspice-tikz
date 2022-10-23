@@ -6,6 +6,7 @@ class TextNetlist(Enum):
     Comment    = 0
     Command    = 1
     SymbolText = 2
+    Flag       = 3
 
 # TODO: add coordinate object...
 # TODO: probably remove all *args...
@@ -84,7 +85,7 @@ class Geometry:
         
         if geometry == None:
             print("Geometry error :(")
-            return 
+            return
         
         if isinstance(geometry, Geometry):
             return parent.add( geometry )
@@ -329,11 +330,35 @@ class Text(Geometry):
         
         return Text(Coord(cmd[0], cmd[1]), text, text_align=cmd[2].lower(), font_size=font_size, type=type)
 
-class Flag(Text):
-    pass
+class Flag(Text, Symbol):
+    
+    def __init__(self, parent, pos, name, color=Colors.unassigned, **kwargs):
+        
+        super().__init__(parent=parent, anchor=pos, text=name, text_align="left", font_size=20, color=Colors.unassigned, type=TextNetlist.Flag, **kwargs)
+        
+        self.parent = parent
+        
+        self.is_ground = False
+        
+        self.geometries = parent.symbolstash.get_symbol("NODE").geometries
+    
+    @classmethod
+    def from_ltspice_gui_command(self, cmd, parent, *args, **kwargs):
+        
+        name = ' '.join(cmd[2:])
+        
+        if name == "0":
+            return Ground(parent, Coord(cmd[0:2]))
+        
+        return Flag(parent, Coord(cmd[0:2]), name)
 
 class Ground(Flag):
-    pass
+    
+    def __init__(self, parent, pos, color=Colors.unassigned, **kwargs):
+        
+        super().__init__(parent, pos, "GND", color, **kwargs)
+    
+        self.geometries = parent.symbolstash.get_symbol("GND").geometries
 
 class Port(Flag):
     

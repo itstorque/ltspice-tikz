@@ -60,6 +60,10 @@ class Command:
                 Wire.add_to_parent_from_ltspice_gui_command(schematic, self.args)
             case CMD.SYMBOL:
                 Symbol.add_to_parent_from_ltspice_gui_command(schematic, self.args)
+                
+                
+            case CMD.FLAG:
+                Flag.add_to_parent_from_ltspice_gui_command(schematic, self.args)
             
             case CMD.SYMATTR:
                 pass # TODO: implement things that rely on last_symbol
@@ -76,6 +80,8 @@ def parser(raw, symbolstash):
     raw = raw.replace("\x00", "")
     
     for cmd in raw.split("\n")[1:]:
+        
+        cmd = " ".join(cmd.split())
         
         if cmd != "":
         

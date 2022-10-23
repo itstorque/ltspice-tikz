@@ -1,3 +1,4 @@
+from built_in_symbols import SYMBOLS
 import json
 from file_interface import *
 
@@ -15,6 +16,11 @@ class SymbolStash:
         self.compiled_symbols = {}
         
         self.directory_invariant = directory_invariant
+        
+    def add_base_symbols(self):
+        
+        self.add("gnd",  SYMBOLS.GND())
+        self.add("node", SYMBOLS.NODE())
         
     def save(self):
         raise NotImplementedError
@@ -52,10 +58,10 @@ class SymbolStash:
             
         return name.lower()
     
-    def add_symbol(self, name, code):
+    def add(self, name, code):
         name = self.format_name(name)
         
-        self.compiled_symbols[name] = parser(code)
+        self.compiled_symbols[name] = parser(code, self)
         
 class WebSymbolStash(SymbolStash):
     
@@ -73,13 +79,17 @@ class WebSymbolStash(SymbolStash):
             
         for name, source in self.get_dicts().items():
             self.symbols_source[name] = source
+            
+        
+        if "gnd" not in self.symbols_source or "node" not in self.symbols_source:
+            self.add_base_symbols()
     
     def add(self, name, source):
         name = self.format_name(name)
         
         self.symbols_source[name] = source
         
-        schematic = parser(source, SymbolStash())
+        schematic = parser(source, self)
         self.compiled_symbols[name] = schematic
         
         self.save()

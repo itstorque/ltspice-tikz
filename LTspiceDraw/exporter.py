@@ -35,6 +35,8 @@ class Exporter:
         
         for elem in schematic.geometries:
             
+            print(elem)
+            
             elem.color().fallback(schematic.color())
             
             self.ctx.strokeStyle = elem.color().hex()
@@ -55,6 +57,12 @@ class Exporter:
                 elem.color().fallback(schematic.textColor(elem.type))
                 self.add_text(elem)
                 
+            elif type(elem) == Ground:
+                self.draw(elem)
+                
+            elif type(elem) == Flag:
+                self.draw(elem)
+                
             elif type(elem) == Symbol:
                 self.draw(elem)
                
@@ -70,11 +78,15 @@ class HTML_Canvas_Exporter(Exporter):
     def __init__(self, ctx):
         self.ctx = ctx
         self.canvas = ctx.canvas
+        
+        import js
+        
+        self.js = js
     
     def draw_line(self, line):
         
         self.ctx.beginPath()
-        self.ctx.lineWidth = line.thickness
+        # self.ctx.lineWidth = line.thickness
         self.ctx.lineCap = line.line_cap
         self.ctx.moveTo(*line.start)
         self.ctx.lineTo(*line.end)
@@ -104,13 +116,20 @@ class HTML_Canvas_Exporter(Exporter):
         
     def add_text(self, text_object):
         
-        print("TEXT")
-        print(text_object)
-        
         self.ctx.fillStyle = text_object.color().hex()
         
         self.ctx.font = str(text_object.font_size) + 'pt sans-serif';#text_object.font
         self.ctx.fillText(text_object.text, *text_object.get_pos("left"))
+        
+    def add_flag(self, flag):
+        
+        if isinstance(flag, Ground):
+            print("GROUND")
+            
+    def draw(self, *args, **kwargs):
+        self.ctx.lineWidth = self.js.thickness_slider.slider("get value")
+        
+        super().draw(*args, **kwargs)
     
     
 class tikz_Exporter(Exporter):

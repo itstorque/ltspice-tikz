@@ -192,3 +192,17 @@ $('#to_color_dropdown')
     ]
   })
 ;
+
+thickness_slider = $('#line_thickness')
+
+thickness_slider
+  .slider({
+    min: 0.1,
+    max: 5,
+    start: 2,
+    step: 0.1,
+    onChange: function(value) {
+        render();
+    }
+  })
+;

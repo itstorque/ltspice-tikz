@@ -46,8 +46,9 @@ class Color:
     def __bool__(self): return self.unassigned
 
 class Colors(Enum):
-    unassigned  = Color(0, 0, 0, name="Black (Unassigned)", unassigned=True)
-    black       = Color(0, 0, 0, name="Black")
+    unassigned      = Color(0, 0, 0,       name="Black (Unassigned)", unassigned=True)
+    unassigned_alt  = Color(255, 255, 255, name="Black (Unassigned Alt)", unassigned=True)
+    black           = Color(0, 0, 0,       name="Black")
     
     def __call__(self):
         return self.value
