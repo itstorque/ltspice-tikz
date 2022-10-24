@@ -25,6 +25,8 @@ class Geometry:
         self.rotation = 0
         self.reflected = False
         
+        self.default_sensitivity = 5
+        
         self.name = kwargs["name"] if "name" in kwargs else "Geometry"
         
         # TODO: not used as of now...
@@ -47,6 +49,18 @@ class Geometry:
     
     def set_color(self, color):
         self.color = color
+        
+    def is_inside(self, x, y, sensitivity = 5):
+        return False
+    
+    def in_bounding_box(self, pt1, pt2, test_pt, sensitivity=None):
+        
+        if sensitivity == None: sensitivity = self.default_sensitivity
+        
+        self.pt1 = pt1 - sensitivity
+        self.pt2 = pt2 + sensitivity
+        
+        return (test_pt[0] > pt1[0] - sensitivity and test_pt[0] < pt2[0] + sensitivity and test_pt[1] > pt1[1] - sensitivity and test_pt[1] < pt2[1] + sensitivity)
     
     @classmethod
     def from_ltspice_gui_command(self, coords, *args, **kwargs):
@@ -118,6 +132,9 @@ class Line(Geometry):
         
         return Line(coords[0:2], coords[2:4], *args, **kwargs)#, linestyle=linestyle)
         
+    def is_inside(self, x, y, sensitivity = None):
+        return self.in_bounding_box(self.start.as_array(), self.end.as_array(), (x, y), sensitivity=sensitivity)
+        
     def tikz(self) -> str:
         return f"\draw ({self.start[0]},{self.start[1]}) to ({self.end[0]},{self.end[1]});"
     
@@ -139,8 +156,11 @@ class Arc(Geometry):
         except:
             self.size = (size, size)
             
-        self.center = center
-        self.size = size
+        self.center = Coord(center)
+        self.size = Coord(size)
+        
+    def is_inside(self, x, y, sensitivity = None):
+        return self.in_bounding_box(self.center.as_array() - self.size.as_array(), self.center.as_array() + self.size.as_array(), (x, y), sensitivity=sensitivity)
         
     # def move_to(self, pos):
     #     self.center[0] += pos[0]
@@ -232,6 +252,59 @@ class Symbol(Geometry):
             self.reflected = kwargs["reflected"]
         else: 
             self.reflected = False
+        
+    def is_inside(self, x, y, sensitivity = None):
+        
+        print("SUMBOL TEST")
+        
+        x, y = x - self.pos[0], y - self.pos[1]
+        
+        if self.reflected: 
+            x, y = -x, y
+            
+        if self.rotation:
+            r = -np.deg2rad(self.rotation)
+            R = np.array([[np.cos(r), -np.sin(r)],
+                          [np.sin(r),  np.cos(r)]])
+            x, y = R @ np.array([x, y])
+            print(x, y)
+        
+        # print(x, y)
+        
+        pt_x_storage = set()
+        pt_y_storage = set()
+        ans = False
+        
+        for geom in self.geometries:
+            
+            ans = ans or geom.is_inside(x, y, sensitivity=sensitivity)
+            
+            pt_x_storage.add(geom.pt1[0])
+            pt_x_storage.add(geom.pt2[0])
+            
+            pt_y_storage.add(geom.pt1[1])
+            pt_y_storage.add(geom.pt2[1])
+            
+        self.pt1 = (min(pt_x_storage), min(pt_y_storage))# + self.pos.as_array()
+        self.pt2 = (max(pt_x_storage), max(pt_y_storage))# + self.pos.as_array()
+        
+        if self.rotation:
+            r = np.deg2rad(self.rotation)
+            R = np.array([[np.cos(r), -np.sin(r)],
+                          [np.sin(r),  np.cos(r)]])
+            
+            self.pt1 = R @ self.pt1
+            self.pt2 = R @ self.pt2
+        
+        if self.reflected:
+            self.pt1 = [-self.pt1[0], self.pt1[1]]
+            self.pt2 = [-self.pt2[0], self.pt2[1]]
+            
+        self.pt1 = self.pos.as_array()+self.pt1
+        self.pt2 = self.pos.as_array()+self.pt2
+            
+            
+        return ans # self.in_bounding_box(self.pt1, self.pt2, (x, y), sensitivity=sensitivity)
         
     @classmethod
     def from_ltspice_gui_command(self, cmd, parent, *args, **kwargs):
@@ -371,9 +444,10 @@ class Port(Flag):
 class Coord(tuple):
     
     def __new__(self, *args):
-        if (isinstance(args[0], Coord) or \
-            isinstance(args[0], list ) or \
-            isinstance(args[0], tuple) ) and len(args)==1:
+        if (isinstance(args[0], Coord      ) or \
+            isinstance(args[0], np.ndarray ) or \
+            isinstance(args[0], list       ) or \
+            isinstance(args[0], tuple      ) ) and len(args)==1:
             # return tuple.__new__(Coord, args[0])
             args = args[0]
         

@@ -28,6 +28,8 @@ let currentTransformedCursor;
 
 let transformProperties = null;
 
+currentTransformedCursor = getTransformedPoint(0, 0)
+
 function createObject(object, variableName){
     // Bind a variable whose name is the string variableName
     // to the object called 'object'
@@ -56,7 +58,7 @@ function setupCanvas(event) {
 
 function render() {
     canvas.dispatchEvent(redraw);
-    tooltip_redraw();
+    if (in_edit_mode) { tooltip_redraw(); }
 }
 
 function onMouseDown(event) {
@@ -162,13 +164,11 @@ function toggle_edit_mode() {
 
 function draw_selected_elem_bounding_box(element_selected) {
 
-    tooltips_context.clearRect(0, 0, tooltips_canvas.width, tooltips_canvas.height);
-
     tooltips_context.strokeStyle = "#000";
     tooltips_context.beginPath();
     tooltips_context.setLineDash([12/total_zoom]);
     tooltips_context.lineWidth = 3/total_zoom;
-    tooltips_context.rect(element_selected.x, element_selected.y, element_selected.w, element_selected.h); 
+    tooltips_context.rect(element_selected.x, element_selected.y, element_selected.x2 - element_selected.x, element_selected.y2 - element_selected.y); 
     tooltips_context.stroke();
     tooltips_context.setLineDash([]);
 
@@ -176,23 +176,28 @@ function draw_selected_elem_bounding_box(element_selected) {
 
     tooltips_context.fillStyle = tooltip_color;
     tooltips_context.fillRect(element_selected.x-s/total_zoom, element_selected.y-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
-    tooltips_context.fillRect(element_selected.x+element_selected.w-s/total_zoom, element_selected.y-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
-    tooltips_context.fillRect(element_selected.x-s/total_zoom, element_selected.y+element_selected.h-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
-    tooltips_context.fillRect(element_selected.x+element_selected.w-s/total_zoom, element_selected.y+element_selected.h-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
+    tooltips_context.fillRect(element_selected.x2-s/total_zoom, element_selected.y-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
+    tooltips_context.fillRect(element_selected.x-s/total_zoom, element_selected.y2-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
+    tooltips_context.fillRect(element_selected.x2-s/total_zoom, element_selected.y2-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
 
 }
 
 function tooltip_redraw(event) {
 
-    element_selected.x = document.element_selected.get("x")
-    element_selected.y = document.element_selected.get("y")
-    element_selected.w = document.element_selected.get("w")
-    element_selected.h = document.element_selected.get("h")
-    
-    if (element_selected) {
+    tooltips_context.save()
+    tooltips_context.setTransform(1,0,0,1,0,0)
+    tooltips_context.clearRect(0, 0, canvas.width, canvas.height)
+    tooltips_context.restore()
 
-        draw_selected_elem_bounding_box(element_selected)
+    if (document.element_selected) {
         
+        element_selected.x = document.element_selected.get("x")
+        element_selected.y = document.element_selected.get("y")
+        element_selected.x2 = document.element_selected.get("x2")
+        element_selected.y2 = document.element_selected.get("y2")
+        
+        draw_selected_elem_bounding_box(element_selected)
+
     }
 
 }

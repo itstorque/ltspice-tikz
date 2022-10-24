@@ -20,9 +20,21 @@ def set_running():
  
 def click_canvas(event):
     
-    print(event.x)
+    selected_element = None
     
-    document.element_selected = {"x": event.x, "y": event.y, "w": 100, "h": 100}
+    for elem in document.schematic.geometries:
+        
+        if elem.is_inside(event.x, event.y):
+            print("YAY")
+            selected_element = elem
+            
+    print(selected_element)
+    
+    if selected_element:
+        document.element_selected = {"x": selected_element.pt1[0], "y": selected_element.pt1[1], "x2": selected_element.pt2[0], "y2": selected_element.pt2[1]}
+    else:
+        document.element_selected = None
+        
     js.tooltip_redraw(event)
     
  
