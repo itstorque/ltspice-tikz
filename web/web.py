@@ -12,9 +12,19 @@ canvas = document.getElementById("canvas")
 ctx = canvas.getContext("2d")
 CANVAS = HTML_Canvas_Exporter(ctx)
 
+tooltips_canvas = js.tooltips_canvas
+
 def set_running():
     pass # TODO: change this to a visual thing.
 	# document.getElementById("status").innerHTML = 'Python loaded and running ...'
+ 
+def click_canvas(event):
+    
+    print(event.x)
+    
+    document.element_selected = {"x": event.x, "y": event.y, "w": 100, "h": 100}
+    js.tooltip_redraw(event)
+    
  
 def read_complete(event):
     # event is ProgressEvent
@@ -109,6 +119,7 @@ def main():
     file_event = create_proxy(process_file)
     symbol_event = create_proxy(add_symbols)
     redraw_event = create_proxy(redraw)
+    ui_click = create_proxy(click_canvas)
 
     # Set the listener to the callback
     e = document.getElementById("file-upload")
@@ -118,5 +129,6 @@ def main():
     e.addEventListener("change", symbol_event, False)
     
     canvas.addEventListener("redraw", redraw_event, False)
+    tooltips_canvas.addEventListener("ui_click", ui_click, False)
 
 main()

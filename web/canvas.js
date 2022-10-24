@@ -1,4 +1,5 @@
 const redraw = new Event('redraw');
+const ui_click = new Event('ui_click');
 
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
@@ -18,6 +19,8 @@ scale = 2
 let isDragging = false;
 let didDragBy = false;
 
+let element_selected = Object();
+
 let total_zoom = 1;
 
 let dragStartPosition = { x: 0, y: 0 };
@@ -25,7 +28,13 @@ let currentTransformedCursor;
 
 let transformProperties = null;
 
-let element_selected = null;
+function createObject(object, variableName){
+    // Bind a variable whose name is the string variableName
+    // to the object called 'object'
+    let execString = variableName + " = object"
+    console.log("Running `" + execString + "`");
+    eval(execString)
+}
 
 function setupCanvas(event) {
 
@@ -95,12 +104,24 @@ function onMouseUp(event) {
 
         currentTransformedCursor = getTransformedPoint(event.offsetX, event.offsetY);
 
-        console.log("CLICK at " + currentTransformedCursor.x + ", " + currentTransformedCursor.y)
         if (in_edit_mode) {
-            element_selected = {x: currentTransformedCursor.x, y: currentTransformedCursor.y,
-                                w: 100, h: 50}
-            tooltip_redraw(event)
+
+            // response = ui_click(currentTransformedCursor.x, currentTransformedCursor.y);
+
+            // console.log(response);
+            // console.log(ui_click);
+
+            // element_selected = response;
+
+            // tooltip_redraw(event);
+
+            ui_click.x = currentTransformedCursor.x
+            ui_click.y = currentTransformedCursor.y
+
+            tooltips_canvas.dispatchEvent(ui_click);
+
         }
+
     }
     
 	isDragging = false;
@@ -162,6 +183,11 @@ function draw_selected_elem_bounding_box(element_selected) {
 }
 
 function tooltip_redraw(event) {
+
+    element_selected.x = document.element_selected.get("x")
+    element_selected.y = document.element_selected.get("y")
+    element_selected.w = document.element_selected.get("w")
+    element_selected.h = document.element_selected.get("h")
     
     if (element_selected) {
 
