@@ -3,31 +3,51 @@ const redraw = new Event('redraw');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 
+const tooltips_canvas = document.getElementById('tooltips_canvas');
+const tooltips_context = tooltips_canvas.getContext('2d');
+
+const tooltip_color = "#2E8EC8";
+
+let in_edit_mode = false;
+
+controlling_canvas = tooltips_canvas
+
 context.imageSmoothingEnabled = false;
 scale = 2
 
 let isDragging = false;
+let didDragBy = false;
+
+let total_zoom = 1;
+
 let dragStartPosition = { x: 0, y: 0 };
 let currentTransformedCursor;
 
 let transformProperties = null;
+
+let element_selected = null;
 
 function setupCanvas(event) {
 
     canvas.width  = window.innerWidth * scale;
     canvas.height = window.innerHeight * scale;
 
+    tooltips_canvas.width  = canvas.width;
+    tooltips_canvas.height = canvas.height;
+
     if (transformProperties == null) {
         transformProperties = canvas.getTransform();
     }
 
     context.setTransform(transformProperties);
+    tooltips_context.setTransform(transformProperties);
 
     render();
 }
 
 function render() {
     canvas.dispatchEvent(redraw);
+    tooltip_redraw();
 }
 
 function onMouseDown(event) {
@@ -47,30 +67,59 @@ function getTransformedPoint(x, y) {
 
 function onMouseMove(event) {
 
-    currentTransformedCursor = getTransformedPoint(event.offsetX, event.offsetY)
-
     if (isDragging) {
-        context.translate(currentTransformedCursor.x - dragStartPosition.x, currentTransformedCursor.y - dragStartPosition.y);
+
+        currentTransformedCursor = getTransformedPoint(event.offsetX, event.offsetY)
+
+        deltaX = currentTransformedCursor.x - dragStartPosition.x;
+        deltaY = currentTransformedCursor.y - dragStartPosition.y;
+
+        didDragBy += Math.abs(deltaX)
+        didDragBy += Math.abs(deltaY)
+
+        context.translate(deltaX, deltaY);
+
+        tooltips_context.setTransform(context.getTransform());
+
         render();
-    }
     
-    transformProperties = context.getTransform();
+        transformProperties = context.getTransform();
+
+    }
 
 }
 
-function onMouseUp() {
+function onMouseUp(event) {
+
+    if (didDragBy < 5) {
+
+        currentTransformedCursor = getTransformedPoint(event.offsetX, event.offsetY);
+
+        console.log("CLICK at " + currentTransformedCursor.x + ", " + currentTransformedCursor.y)
+        if (in_edit_mode) {
+            element_selected = {x: currentTransformedCursor.x, y: currentTransformedCursor.y,
+                                w: 100, h: 50}
+            tooltip_redraw(event)
+        }
+    }
+    
 	isDragging = false;
+    didDragBy = 0;
+
 }
 
 function onWheel(event) {
 
-    const zoom = event.deltaY < 0 ? 1.1 : 0.9;
+    const zoom = event.deltaY < 0 ? 1.08 : 0.92;
+
+    total_zoom *= zoom;
   
     context.translate(currentTransformedCursor.x, currentTransformedCursor.y);
     context.scale(zoom, zoom);
     context.translate(-currentTransformedCursor.x, -currentTransformedCursor.y);
 
     transformProperties = context.getTransform();
+    tooltips_context.setTransform(transformProperties);
         
     render();
     event.preventDefault();
@@ -85,10 +134,47 @@ function toColorObject() {
     return $("#to_color_dropdown").dropdown("get value")
 }
 
-canvas.addEventListener('mousedown', onMouseDown);
-canvas.addEventListener('mousemove', onMouseMove);
-canvas.addEventListener('mouseup', onMouseUp);
-canvas.addEventListener('wheel', onWheel);
+function toggle_edit_mode() {
+    in_edit_mode = !in_edit_mode;
+    $("#edit_schematic_button").toggleClass("active");
+}
+
+function draw_selected_elem_bounding_box(element_selected) {
+
+    tooltips_context.clearRect(0, 0, tooltips_canvas.width, tooltips_canvas.height);
+
+    tooltips_context.strokeStyle = "#000";
+    tooltips_context.beginPath();
+    tooltips_context.setLineDash([12/total_zoom]);
+    tooltips_context.lineWidth = 3/total_zoom;
+    tooltips_context.rect(element_selected.x, element_selected.y, element_selected.w, element_selected.h); 
+    tooltips_context.stroke();
+    tooltips_context.setLineDash([]);
+
+    const s = 6; 
+
+    tooltips_context.fillStyle = tooltip_color;
+    tooltips_context.fillRect(element_selected.x-s/total_zoom, element_selected.y-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
+    tooltips_context.fillRect(element_selected.x+element_selected.w-s/total_zoom, element_selected.y-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
+    tooltips_context.fillRect(element_selected.x-s/total_zoom, element_selected.y+element_selected.h-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
+    tooltips_context.fillRect(element_selected.x+element_selected.w-s/total_zoom, element_selected.y+element_selected.h-s/total_zoom, 2*s/total_zoom, 2*s/total_zoom)
+
+}
+
+function tooltip_redraw(event) {
+    
+    if (element_selected) {
+
+        draw_selected_elem_bounding_box(element_selected)
+        
+    }
+
+}
+
+controlling_canvas.addEventListener('mousedown', onMouseDown);
+controlling_canvas.addEventListener('mousemove', onMouseMove);
+controlling_canvas.addEventListener('mouseup', onMouseUp);
+controlling_canvas.addEventListener('wheel', onWheel);
 
 window.addEventListener('load',   setupCanvas);
 window.addEventListener('resize', setupCanvas);
@@ -206,3 +292,5 @@ thickness_slider
     }
   })
 ;
+
+$("#edit_schematic_button").click(toggle_edit_mode);

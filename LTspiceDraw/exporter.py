@@ -35,8 +35,6 @@ class Exporter:
         
         for elem in schematic.geometries:
             
-            print(elem)
-            
             elem.color().fallback(schematic.color())
             
             self.ctx.strokeStyle = elem.color().hex()
@@ -112,7 +110,7 @@ class HTML_Canvas_Exporter(Exporter):
         self.ctx.ellipse(*arc.center, *arc.size, 0, *arc.theta_span) # TODO: rotation is 0 here
         self.ctx.stroke()
         
-        self.ctx.restore()
+        # self.ctx.restore()
         
     def add_text(self, text_object):
         

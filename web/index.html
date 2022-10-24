@@ -21,13 +21,13 @@
 
     <body>
 
-        <canvas id="canvas" style="background-color:#888; width: 100vw; height: 100vh; position: fixed; top: 0;"></canvas>
+        <canvas id="canvas" style="background-color:#fff; width: 100vw; height: 100vh; position: fixed; top: 0; z-index: -1;"></canvas>
+        <canvas id="tooltips_canvas" style="width: 100vw; height: 100vh; position: fixed; top: 0; z-index: 0;"></canvas>
 
-        <py-config type="toml">
+        <py-config type="toml" hidden>
             packages = ["numpy"]
             paths = [
                 "./LTspiceDraw/circuit.py", 
-                "./LTspiceDraw/drawer.py", 
                 "./LTspiceDraw/geometry.py", 
                 "./LTspiceDraw/file_interface.py",
                 "./LTspiceDraw/built_in_symbols.py",
@@ -38,7 +38,7 @@
         </py-config>
 
 
-        <py-script output="out" src="./web.py"></py-script>
+        <py-script output="out" src="./web.py" hidden></py-script>
 
         <div class="ui tiny modal" id="missing_symbol">
             <div class="header">Missing Symbol</div>
@@ -115,10 +115,10 @@
                     Simulation
                 </a>
 
-                <a class="blue item">
+                <a class="blue item" id="edit_schematic_button">
                     <i class="object ungroup outline icon"></i>
                     Edit
-                </a>
+                </butaton>
 
                 <a class="blue item">
                     <i class="share icon"></i>
@@ -163,7 +163,7 @@
                     Lines
                     </div>
 
-                    <div class="ui bottom aligned labeled slider" id="line_thickness"></div>
+                    <div class="ui slider" id="line_thickness"></div>
 
                     
 
