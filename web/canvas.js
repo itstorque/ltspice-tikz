@@ -30,14 +30,6 @@ let transformProperties = null;
 
 currentTransformedCursor = getTransformedPoint(0, 0)
 
-function createObject(object, variableName){
-    // Bind a variable whose name is the string variableName
-    // to the object called 'object'
-    let execString = variableName + " = object"
-    console.log("Running `" + execString + "`");
-    eval(execString)
-}
-
 function setupCanvas(event) {
 
     canvas.width  = window.innerWidth * scale;

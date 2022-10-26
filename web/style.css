@@ -52,3 +52,40 @@ color: MediumSlateBlue;
     max-height: 60vh;
     overflow-y: scroll;
 }
+
+py-loader {
+    display: none !important;
+}
+
+#loader {
+    position: fixed;
+    margin: auto auto;
+    width: min-content;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    color: white;
+    text-align: center;
+    height: 5em;
+    mix-blend-mode: difference;
+}
+
+#loader h2 {
+    height: 2em;
+}
+
+#loader .loading.icon {
+    width: 50px;
+    font-size: 3em !important;
+}
+
+/* <py-loader><div id="pyscript_loading_splash" class="py-overlay">
+        <div class="py-pop-up">
+        <div class="smooth spinner"></div>
+        <div id="pyscript-loading-label" class="label">
+          <div id="pyscript-operation-details">
+          <p>Downloading pyodide-0.21.2...</p><p>Python startup...</p><p>Python ready!</p><p>Setting up virtual environment...</p></div>
+        </div>
+        </div>
+      </div></py-loader> */

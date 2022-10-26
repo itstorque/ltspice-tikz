@@ -1,3 +1,4 @@
+from unittest import loader
 import js
 from js import document, FileReader, localStorage
 from pyodide import create_proxy
@@ -15,8 +16,7 @@ CANVAS = HTML_Canvas_Exporter(ctx)
 tooltips_canvas = js.tooltips_canvas
 
 def set_running():
-    pass # TODO: change this to a visual thing.
-	# document.getElementById("status").innerHTML = 'Python loaded and running ...'
+    document.getElementById("loader").style.display = "None"
  
 def click_canvas(event):
     

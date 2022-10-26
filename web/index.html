@@ -91,6 +91,20 @@
             </div>
         </div>
 
+        <div class="ui tiny modal" id="add_symbol">
+
+            <div class="header">Export</div>
+
+            <div class="actions">
+
+                <button class="ui labeled icon button">
+                    <i class="ui file code icon"></i> 
+                    Import Sybmol Folder
+                </button>
+
+            </div>
+        </div>
+
         <input type="file" id="file-upload" accept=".asc,.asy" hidden>
         
         <div class="ui borderless small menu" style="position: fixed; top: 0; width: 96vw; left: 2vw">
@@ -118,7 +132,7 @@
                 <a class="blue item" id="edit_schematic_button">
                     <i class="object ungroup outline icon"></i>
                     Edit
-                </butaton>
+                </a>
 
                 <a class="blue item">
                     <i class="share icon"></i>
@@ -180,6 +194,11 @@
           </div>
         
         <script src="canvas.js"></script>
+
+        <div id="loader">
+            <i class="huge asterisk inverted asterisk loading icon"></i>
+            <h2> Loading... </h2>
+        </div>
 
     </body>
 </html>
