@@ -1,7 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-        <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 
         <script
@@ -24,7 +24,7 @@
         <canvas id="canvas" style="background-color:#fff; width: 100vw; height: 100vh; position: fixed; top: 0; z-index: -1;"></canvas>
         <canvas id="tooltips_canvas" style="width: 100vw; height: 100vh; position: fixed; top: 0; z-index: 0;"></canvas>
 
-        <py-config type="toml" hidden>
+        <py-config type="toml">
             packages = ["numpy"]
             paths = [
                 "./LTspiceDraw/circuit.py", 
@@ -33,7 +33,7 @@
                 "./LTspiceDraw/built_in_symbols.py",
                 "./LTspiceDraw/styling.py",
                 "./LTspiceDraw/exporter.py",
-                "./LTspiceDraw/symbols.py",
+                "./LTspiceDraw/symbols.py"
                 ]
         </py-config>
 
@@ -91,15 +91,15 @@
             </div>
         </div>
 
-        <div class="ui tiny modal" id="add_symbol">
+        <div class="ui tiny modal" id="export_schematic">
 
             <div class="header">Export</div>
 
             <div class="actions">
 
-                <button class="ui labeled icon button">
+                <button class="ui labeled icon button" id="export_to_tikz">
                     <i class="ui file code icon"></i> 
-                    Import Sybmol Folder
+                    Copy LaTeX/tikz code
                 </button>
 
             </div>
@@ -134,7 +134,7 @@
                     Edit
                 </a>
 
-                <a class="blue item">
+                <a class="blue item" id="export_button">
                     <i class="share icon"></i>
                     Export
                 </a>

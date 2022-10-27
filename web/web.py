@@ -1,10 +1,9 @@
-from unittest import loader
 import js
 from js import document, FileReader, localStorage
 from pyodide import create_proxy
 
 from file_interface import parser
-from exporter import HTML_Canvas_Exporter
+from exporter import HTML_Canvas_Exporter, Tikz_Exporter
 from symbols import WebSymbolStash
 from circuit import CircuitSchematic
 from styling import Color
@@ -14,6 +13,17 @@ ctx = canvas.getContext("2d")
 CANVAS = HTML_Canvas_Exporter(ctx)
 
 tooltips_canvas = js.tooltips_canvas
+
+def export_to(type):
+    type=type.value
+    if type == "tikz":
+        
+        tikz_code = Tikz_Exporter().draw(document.schematic)
+        
+        js.navigator.clipboard.writeText(tikz_code);
+        
+    else:
+        raise ValueError
 
 def set_running():
     document.getElementById("loader").style.display = "None"
@@ -132,6 +142,7 @@ def main():
     symbol_event = create_proxy(add_symbols)
     redraw_event = create_proxy(redraw)
     ui_click = create_proxy(click_canvas)
+    export_event = create_proxy(export_to)
 
     # Set the listener to the callback
     e = document.getElementById("file-upload")
@@ -141,6 +152,7 @@ def main():
     e.addEventListener("change", symbol_event, False)
     
     canvas.addEventListener("redraw", redraw_event, False)
+    canvas.addEventListener("export_to", export_event, False)
     tooltips_canvas.addEventListener("ui_click", ui_click, False)
 
 main()

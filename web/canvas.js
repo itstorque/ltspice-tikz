@@ -1,3 +1,4 @@
+const export_to_event = new Event('export_to');
 const redraw = new Event('redraw');
 const ui_click = new Event('ui_click');
 
@@ -239,6 +240,11 @@ swatchGrid.addEventListener('click', function(e) {
   }
 });
 
+$("#export_to_tikz").click( () => {
+  export_to_event.value = "tikz"
+  canvas.dispatchEvent(export_to_event);
+})
+
 $('#styling_button')
   .popup({
     popup : $('#styling_popup'),
@@ -247,13 +253,21 @@ $('#styling_button')
   })
 ;
 
-$('#source_code_button')
-  .popup({
-    popup : $('#source_code'),
-    inline: true,
-    on: "click"
-  })
-;
+// $('#source_code_button')
+//   .popup({
+//     popup : $('#source_code'),
+//     inline: true,
+//     on: "click"
+//   })
+// ;
+
+$('#source_code_button').click( () => {
+  $("#source_code").modal('show')
+})
+
+$('#export_button').click( () => {
+  $("#export_schematic").modal('show')
+})
 
 $('#to_color_dropdown')
   .dropdown({
