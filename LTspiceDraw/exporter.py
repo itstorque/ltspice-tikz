@@ -24,8 +24,6 @@ class Exporter:
     
     def draw(self, schematic, **kwargs):
         
-        print("CALL DRAW", schematic)
-        
         drawings_cache = set()
         
         for elem in schematic.geometries:
@@ -58,8 +56,6 @@ class Exporter:
                 
             elif type(elem) == Symbol:
                 drawings_cache = drawings_cache.union( self.draw(elem, **kwargs) )
-            
-        print(schematic, len(drawings_cache))
                 
         return drawings_cache
                 
@@ -157,15 +153,12 @@ class Tikz_Exporter(Exporter):
     
     def __init__(self):
         super().__init__()
-        
-        # self.output = ""
     
     def draw_line(self, line):
         return f"\draw ({line.start[0]},{line.start[1]}) to ({line.end[0]},{line.end[1]});"
     
     def draw_rectangle(self, rectangle):
         raise NotImplementedError
-        # self.output += #f"\draw ({self.start[0]},{self.start[1]}) to ({self.end[0]},{self.end[1]});"
     
     def draw_circle(self, circle):
         return f"\draw ({circle.center[0]},{circle.center[1]}) ellipse ({circle.size[0]} and {circle.size[1]});"
@@ -178,13 +171,7 @@ class Tikz_Exporter(Exporter):
         return f""
     
     def draw(self, schematic, _main_call=True):
-        # self.output = ""
+        
         if _main_call:
             return '\n'.join(super().draw(schematic, _main_call=False))
         return super().draw(schematic, _main_call=False)
-        
-        # print(">>>", super().draw(schematic))
-        
-        # return '\n'.join( super().draw(schematic) )
-        
-        # return prev_output + self.output

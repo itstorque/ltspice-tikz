@@ -35,10 +35,7 @@ def click_canvas(event):
     for elem in document.schematic.geometries:
         
         if elem.is_inside(event.x, event.y):
-            print("YAY")
             selected_element = elem
-            
-    print(selected_element)
     
     if selected_element:
         document.element_selected = {"x": selected_element.pt1[0], "y": selected_element.pt1[1], "x2": selected_element.pt2[0], "y2": selected_element.pt2[1]}
@@ -109,9 +106,10 @@ async def process_file(x):
 
         return
 
-def symbol_missing_method(title, msg):
+def symbol_missing_method(symbol_name):
     js.missing_symbol_error()
-    print("-----", title, "-----", msg)
+    
+    document.getElementById("list-of-missing-symbols").innerText += symbol_name
 
 def add_symbol_from_source(event):
     stash = WebSymbolStash(localStorage, "symbols", symbol_missing_method)

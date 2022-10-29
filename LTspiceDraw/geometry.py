@@ -201,8 +201,6 @@ class Circle(Arc):
         # SYMBOL current 1248 16 R90
         
         coords = Coord(coords[1:5])
-        
-        print(coords, coords[0:2])
 
         pos = coords[0:2].as_array()
         size = abs(pos - coords[2:4])/2
@@ -255,8 +253,6 @@ class Symbol(Geometry):
         
     def is_inside(self, x, y, sensitivity = None):
         
-        print("SUMBOL TEST")
-        
         x, y = x - self.pos[0], y - self.pos[1]
         
         if self.reflected: 
@@ -267,7 +263,6 @@ class Symbol(Geometry):
             R = np.array([[np.cos(r), -np.sin(r)],
                           [np.sin(r),  np.cos(r)]])
             x, y = R @ np.array([x, y])
-            print(x, y)
         
         # print(x, y)
         

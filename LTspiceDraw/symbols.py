@@ -65,12 +65,12 @@ class SymbolStash:
         
 class WebSymbolStash(SymbolStash):
     
-    def __init__(self, localStorage, key, alert_method, directory_invariant=True):
+    def __init__(self, localStorage, key, missing_symbol_handler, directory_invariant=True):
         super().__init__(directory_invariant)
         
         self.localStorage = localStorage
         self.key = key
-        self.alert_method = alert_method
+        self.missing_symbol_handler = missing_symbol_handler
         
         self.loaded_dict = None
         
@@ -112,9 +112,9 @@ class WebSymbolStash(SymbolStash):
     def missing_symbol(self, name):
         name = self.format_name(name)
         # Symbol Not Found, prompt user to upload
-        if self.alert_method==None:
+        if self.missing_symbol_handler==None:
             super().missing_symbol(name)
-        return self.alert_method("Missing symbol " + name, "Upload this symbol to use this circuit")
+        return self.missing_symbol_handler(name)
     
 class LocalSymbolStash(SymbolStash):
     pass # TODO: Implement a way to read directories and get the symbol files...
