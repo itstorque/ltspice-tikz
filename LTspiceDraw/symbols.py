@@ -80,7 +80,6 @@ class WebSymbolStash(SymbolStash):
         for name, source in self.get_dicts().items():
             self.symbols_source[name] = source
             
-        
         if "gnd" not in self.symbols_source or "node" not in self.symbols_source:
             self.add_base_symbols()
     

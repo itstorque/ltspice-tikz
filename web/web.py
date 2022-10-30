@@ -113,10 +113,13 @@ def symbol_missing_method(symbol_name):
 
 def add_symbol_from_source(event):
     stash = WebSymbolStash(localStorage, "symbols", symbol_missing_method)
-    stash.add(event.target.filename.replace(".asy", ""), event.target.result)
+    stash.add(event.target.filename, event.target.result)
+        
+    event.target.handler()
 
-def add_symbols(event):
-    fileList = document.getElementById('symbol-upload').files
+def add_symbols(event, fileList=None, handler=None):
+    if fileList==None:
+        fileList = document.getElementById('symbol-upload').files
     
     for f in fileList:
         
@@ -124,11 +127,28 @@ def add_symbols(event):
         
         onload_event = create_proxy(add_symbol_from_source)
         
-        reader.filename = f.name
+        reader.filename = f.name.replace(".asy", "")
+        
+        if handler == None:
+            reader.handler = lambda: js.show_toast("Symbol added", "Added symbol " + reader.filename)
+        else:
+            reader.handler = handler
         
         reader.onload = onload_event
         
         reader.readAsText(f)
+
+def batch_symbol_upload_handler():
+    js.batch_upload_progress.progress('increment')
+    
+def batch_add_symbols(event):
+    
+    fileList = document.getElementById('batch-symbol-upload').files
+    
+    js.set_batch_upload_count(len(fileList))
+    
+    add_symbols(event, fileList, handler=batch_symbol_upload_handler)
+    
 
 def main():
     
@@ -138,6 +158,7 @@ def main():
     # Create a Python proxy for the callback function
     file_event = create_proxy(process_file)
     symbol_event = create_proxy(add_symbols)
+    batch_symbol_event = create_proxy(batch_add_symbols)
     redraw_event = create_proxy(redraw)
     ui_click = create_proxy(click_canvas)
     export_event = create_proxy(export_to)
@@ -148,6 +169,9 @@ def main():
     
     e = document.getElementById("symbol-upload")
     e.addEventListener("change", symbol_event, False)
+    
+    e = document.getElementById("batch-symbol-upload")
+    e.addEventListener("change", batch_symbol_event, False)
     
     canvas.addEventListener("redraw", redraw_event, False)
     canvas.addEventListener("export_to", export_event, False)

@@ -395,6 +395,8 @@ class Text(Geometry):
         elif text[0] == "!": 
             type = TextNetlist.Command
             text = text[1:]
+        else:
+            type = None
         
         return Text(Coord(cmd[0], cmd[1]), text, text_align=cmd[2].lower(), font_size=font_size, type=type)
 

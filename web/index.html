@@ -21,6 +21,8 @@
 
     <body>
 
+        <input type="file" id="file-upload" accept=".asc,.asy" hidden>
+
         <canvas id="canvas" style="background-color:#fff; width: 100vw; height: 100vh; position: fixed; top: 0; z-index: -1;"></canvas>
         <canvas id="tooltips_canvas" style="width: 100vw; height: 100vh; position: fixed; top: 0; z-index: 0;"></canvas>
 
@@ -38,7 +40,7 @@
         </py-config>
 
 
-        <py-script output="out" src="./web.py" hidden></py-script>
+        <py-script src="./web.py" hidden></py-script> <!-- output="out"  -->
 
         <div class="ui tiny modal" id="missing_symbol">
             <div class="header">Missing Symbol</div>
@@ -50,7 +52,7 @@
                 <p id="list-of-missing-symbols"></p>
             </div>
             <div class="actions">
-                <div class="ui positive button">Add Symbols</div>
+                <div class="ui positive button add_symbol_button">Add Symbols</div>
                 <div class="ui cancel button">Ok</div>
             </div>
         </div>
@@ -67,29 +69,27 @@
         <div class="ui tiny modal" id="add_symbol">
 
             <div class="header">Missing Symbol</div>
-
-            <p id="out"></p>
-
-            <input type="file" id="file-upload" accept=".asc,.asy" hidden>
-
-            <label for="file-upload" class="ui labeled green icon button">
-                <i class="ui upload icon"></i> 
-                Upload Schematic
-            </label>
+            
+            <div class="ui teal progress" id="batch_upload_progress">
+                <div class="bar">
+                  <div class="progress"></div>
+                </div>
+                <div class="label"></div>
+              </div>
 
             <div class="actions">
 
-                <input type="file" id="symbol-upload-folder" accept=".asy" webkitdirectory multiple hidden>
+                <input type="file" id="batch-symbol-upload" accept=".asy" webkitdirectory mozdirectory multiple hidden>
                 <input type="file" id="symbol-upload" accept=".asy" multiple hidden>
 
                 <label for="symbol-upload" class="ui labeled icon button">
                     <i class="ui folder open icon"></i> 
-                    Import Sybmol to Library
+                    Import Sybmols
                 </label>
 
-                <label for="symbol-upload" class="ui labeled icon button">
+                <label for="batch-symbol-upload" class="ui olive labeled icon button">
                     <i class="ui folder icon"></i> 
-                    Import Sybmol Folder
+                    Batch Import
                 </label>
             </div>
         </div>

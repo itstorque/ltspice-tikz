@@ -195,6 +195,28 @@ function tooltip_redraw(event) {
 
 }
 
+function show_toast(title, message) {
+
+  $.toast({
+    title: title,
+    message: message,
+    showProgress: 'bottom',
+    position: 'bottom right',
+    class: 'teal'
+  });
+
+}
+
+batch_upload_progress = $('#batch_upload_progress')
+function set_batch_upload_count(value) {
+  batch_upload_progress.progress({
+      total: value,
+      text: {
+          active: '{value} of {total} done'
+      }
+  })
+}
+
 controlling_canvas.addEventListener('mousedown', onMouseDown);
 controlling_canvas.addEventListener('mousemove', onMouseMove);
 controlling_canvas.addEventListener('mouseup', onMouseUp);
@@ -252,6 +274,10 @@ $('#styling_button')
     on: "click"
   })
 ;
+
+$('.add_symbol_button').click( () => {
+  $('#add_symbol').modal('show')
+})
 
 // $('#source_code_button')
 //   .popup({
@@ -320,10 +346,10 @@ thickness_slider = $('#line_thickness')
 
 thickness_slider
   .slider({
-    min: 0.1,
-    max: 5,
-    start: 2,
-    step: 0.1,
+    min: 0.05,
+    max: 5.0,
+    start: 1.0,
+    step: 0.05,
     onChange: function(value) {
         render();
     }
