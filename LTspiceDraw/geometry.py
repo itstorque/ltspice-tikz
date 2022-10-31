@@ -53,6 +53,9 @@ class Geometry:
     def is_inside(self, x, y, sensitivity = 5):
         return False
     
+    def textColor(self, type):
+        return Colors.unassigned() # TODO: implement this
+    
     def in_bounding_box(self, pt1, pt2, test_pt, sensitivity=None):
         
         if sensitivity == None: sensitivity = self.default_sensitivity
@@ -223,7 +226,9 @@ class Symbol(Geometry):
         super().__init__(parent=parent, *args, **kwargs)
         # TODO: inherit SChematic???
         
-        self.backgroundColor = None
+        self.backgroundColor = None #Colors.unassigned
+        
+        self.text_color = Colors.unassigned # TODO: add a way to assign this
         
         if "geometries" in kwargs:
             self.geometries = kwargs["geometries"]

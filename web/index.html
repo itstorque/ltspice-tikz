@@ -4,6 +4,8 @@
         <script defer src="https://pyscript.net/latest/pyscript.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 
+        <script type="text/javascript" src="default_symbols.json"></script>
+
         <script
         src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
@@ -66,18 +68,24 @@
             </div>
         </div>
 
-        <div class="ui tiny modal" id="add_symbol">
+        <div class="ui modal" id="add_symbol">
 
             <div class="header">Missing Symbol</div>
-            
-            <div class="ui teal progress" id="batch_upload_progress">
-                <div class="bar">
-                  <div class="progress"></div>
-                </div>
-                <div class="label"></div>
-              </div>
+
+            Allowing for live symbol access lets this site access the local directory where your symbol files live.
+            This is recommended but doesn't work well on Mac. If you are on Linux or Windows, it is recommended you
+            use the "Allow Live Symbol Access" button. Otherwise, batch import makes a copy of all your symbols into 
+            the browser and takes a while. If you want to add a few symbols only, you can use the Import Symbols button.
 
             <div class="actions">
+
+                <div class="ui teal progress" id="batch_upload_progress" hidden>
+                    <div class="bar">
+                      <div class="progress"></div>
+                    </div>
+                    <div class="label"></div>
+    
+                  </div>
 
                 <input type="file" id="batch-symbol-upload" accept=".asy" webkitdirectory mozdirectory multiple hidden>
                 <input type="file" id="symbol-upload" accept=".asy" multiple hidden>
@@ -90,6 +98,11 @@
                 <label for="batch-symbol-upload" class="ui olive labeled icon button">
                     <i class="ui folder icon"></i> 
                     Batch Import
+                </label>
+
+                <label class="ui green labeled icon button" id="live-access">
+                    <i class="ui folder icon"></i> 
+                    Allow Live Symbol Access
                 </label>
             </div>
         </div>
@@ -187,7 +200,7 @@
                 </div>
 
                 
-                <a class="blue item">
+                <a class="blue item add_symbol_button">
                     <i class="folder open icon"></i>
                     Symbol Library
                 </a>

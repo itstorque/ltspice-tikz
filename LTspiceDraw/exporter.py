@@ -55,6 +55,7 @@ class Exporter:
                 drawings_cache = drawings_cache.union( self.draw(elem, **kwargs) )
                 
             elif type(elem) == Symbol:
+                # elem.color().fallback(schematic.textColor(elem.type))
                 drawings_cache = drawings_cache.union( self.draw(elem, **kwargs) )
                 
         return drawings_cache

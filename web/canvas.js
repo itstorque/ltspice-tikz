@@ -1,3 +1,7 @@
+if (!localStorage.getItem("symbols")) {
+  localStorage.setItem("symbols", default_symbols) // default_symbols is set in default_symbols.json
+}
+
 const export_to_event = new Event('export_to');
 const redraw = new Event('redraw');
 const ui_click = new Event('ui_click');
@@ -357,3 +361,27 @@ thickness_slider
 ;
 
 $("#edit_schematic_button").click(toggle_edit_mode);
+
+can_do_live_symbols = true
+
+if (navigator.platform.indexOf("Mac") === 0 || navigator.platform === "iPhone") {
+  can_do_live_symbols = false;
+}
+
+if (can_do_live_symbols) {
+  $("#live-access").addClass("green")
+} else {
+  $("#live-access").addClass("red")
+}
+
+$("#live-access").click( () => {
+
+  if (navigator.platform.indexOf("Win") === 0) {
+    alert("Select the sym LTspice directory. This should be similar to C:\\Users\\user\\Documents\\LTspiceXVII\\sym on windows.");
+  } else if (navigator.platform.indexOf("Mac") === 0) {
+    alert("You need to select the LTspice sym directory, however, on Mac, you can't access that since it is in root. You can make a copy of the directory into another folder (such as Documents) and access the symbol library from there or use another import method.");
+  } else {
+    alert("Select the sym LTspice directory. This should be similar to /home/<myusername>/.wine/drive_c/Program Files/LTC/LTspiceXVII/sym on :inux.");
+  }
+
+})
