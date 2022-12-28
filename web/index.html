@@ -30,7 +30,9 @@
 
         <py-config type="toml">
             packages = ["numpy"]
-            paths = [
+
+            [[fetch]]
+            files = [
                 "./LTspiceDraw/circuit.py", 
                 "./LTspiceDraw/geometry.py", 
                 "./LTspiceDraw/file_interface.py",

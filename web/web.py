@@ -2,11 +2,11 @@ import js
 from js import document, FileReader, localStorage
 from pyodide import create_proxy
 
-from file_interface import parser
-from exporter import HTML_Canvas_Exporter, Tikz_Exporter
-from symbols import WebSymbolStash
-from circuit import CircuitSchematic
-from styling import Color
+from LTspiceDraw.file_interface import parser
+from LTspiceDraw.exporter import HTML_Canvas_Exporter, Tikz_Exporter
+from LTspiceDraw.symbols import WebSymbolStash
+from LTspiceDraw.circuit import CircuitSchematic
+from LTspiceDraw.styling import Color
 
 canvas = document.getElementById("canvas")
 ctx = canvas.getContext("2d")

@@ -1,5 +1,5 @@
 import numpy as np
-from styling import *
+from LTspiceDraw.styling import *
     
 class TextNetlist(Enum):
     Unknown    = -1

@@ -1,5 +1,5 @@
-from geometry import *
-from styling import *
+from LTspiceDraw.geometry import *
+from LTspiceDraw.styling import *
 
 class CircuitSchematic:
     

@@ -1,6 +1,6 @@
-from built_in_symbols import SYMBOLS
+from LTspiceDraw.built_in_symbols import SYMBOLS
 import json
-from file_interface import *
+from LTspiceDraw.file_interface import *
 
 class SymbolNotFound(Exception):
     """Requested Symbol Not Found. The source for one or more of the components in the circuit was not found."""

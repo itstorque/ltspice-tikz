@@ -1,5 +1,5 @@
-from circuit import *
-from geometry import *
+from LTspiceDraw.circuit import *
+from LTspiceDraw.geometry import *
 
 from enum import Enum
 from pathlib import Path

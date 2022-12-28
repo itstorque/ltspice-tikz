@@ -1,4 +1,4 @@
-from geometry import *
+from LTspiceDraw.geometry import *
 
 class Exporter:
     def __init__(self):
