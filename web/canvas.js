@@ -44,7 +44,7 @@ function setupCanvas(event) {
     tooltips_canvas.height = canvas.height;
 
     if (transformProperties == null) {
-        transformProperties = canvas.getTransform();
+        transformProperties = context.getTransform();
     }
 
     context.setTransform(transformProperties);
