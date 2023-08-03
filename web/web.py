@@ -1,6 +1,6 @@
 import js
 from js import document, FileReader, localStorage
-from pyodide import create_proxy
+from pyodide.ffi import create_proxy
 
 from LTspiceDraw.file_interface import parser
 from LTspiceDraw.exporter import HTML_Canvas_Exporter, Tikz_Exporter
